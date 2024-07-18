@@ -1,12 +1,10 @@
-import { drizzle } from 'drizzle-orm/planetscale-serverless';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from './schema';
-import { connect } from '@planetscale/database';
-import { env } from '$env/dynamic/private';
+import pg from 'pg';
+import dotenv from 'dotenv';
 
-const connection = connect({
-	host: env.DATABASE_HOST,
-	username: env.DATABASE_USERNAME,
-	password: env.DATABASE_PASSWORD
-});
+dotenv.config()
 
-export const db = drizzle(connection, { schema });
+
+const client = new pg.Client({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+export const db = drizzle(client, { schema });

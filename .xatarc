@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://gidiguru-s-workspace-sd7rsv.us-east-1.xata.sh/db/sveltekit-ecommerce:main",
+  "codegen": {
+    "output": "xata.ts"
+  }
+}

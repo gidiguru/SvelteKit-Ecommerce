@@ -1,24 +1,31 @@
-// SEED THE DB
+    // SEED THE DB
 import {
 	product,
 	productImage,
 	productSize,
 	productTag,
 	productToProductTag
-} from './src/lib/server/db/schema';
-import { drizzle } from 'drizzle-orm/planetscale-serverless';
-import { connect } from '@planetscale/database';
-import 'dotenv/config';
+} from './schema';
 
+//import {db} from './index';
+import dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import * as schema from './schema';
+import pg from 'pg';
+
+
+dotenv.config()
+const { Pool } = pg;
+
+	//connect to db
+	const pool = new Pool({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+	const db = drizzle(pool, { schema });
+	//export default pool
+	
 const seed = async () => {
-	// crete db client
-	const connection = connect({
-		host: process.env.DATABASE_HOST ?? '',
-		username: process.env.DATABASE_USERNAME ?? '',
-		password: process.env.DATABASE_PASSWORD ?? ''
-	});
 
-	const db = drizzle(connection);
+	console.log("seeding db...")
+	//console.log(db)
 
 	// create some products
 	const products = [
@@ -38,6 +45,7 @@ const seed = async () => {
 	const insertedProducts = (await db.insert(product).values(products)).rows;
 
 	console.log(`INSERTED: ${insertedProducts.length} products`);
+
 
 	// create some product sizes
 	// TODO STRIPE:
@@ -167,6 +175,22 @@ const seed = async () => {
 	const insertedTagsToProducts = (await db.insert(productToProductTag).values(productsToTags)).rows;
 
 	console.log(`INSERTED ${insertedTagsToProducts.length} product tag relations`);
+
+	console.log("...completed seeding")
 };
 
-seed();
+
+const drop = async () => {
+	await db.delete(product)
+	await db.delete(productSize)
+	await db.delete(productImage)
+	await db.delete(productTag)
+	await db.delete(productToProductTag)
+	console.log("deleted everything")
+}
+
+
+seed()
+
+//drop()
+
