@@ -53,56 +53,22 @@ const seed = async () => {
             code: 'first_12_12',
             width: 12,
             height: 12,
-            price: 5000,
+            price: 99900,
             stripeProductId: 'prod_QVdISPK4gMFkZp',
             stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
             productId: 'Ugreen_PowerRoam_1200W'
         },
-        {
-            code: 'first_16_16',
-            width: 16,
-            height: 16,
-            price: 7000,
-            stripeProductId: 'prod_QVdISPK4gMFkZp',
-            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
-            productId: 'Ugreen_PowerRoam_1200W'
-        },
-        {
-            code: 'first_24_24',
-            width: 24,
-            height: 24,
-            price: 10000,
-            stripeProductId: 'prod_QVdISPK4gMFkZp',
-            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
-            productId: 'Ugreen_PowerRoam_1200W'
-        },
+
         {
             code: 'second_12_12',
             width: 12,
             height: 12,
-            price: 5000,
+            price: 1749,
             stripeProductId: 'prod_QViQhi5vMthfBz',
             stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
             productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
         },
-        {
-            code: 'second_16_16',
-            width: 16,
-            height: 16,
-            price: 7000,
-            stripeProductId: 'prod_QViQhi5vMthfBz',
-            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
-            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
-        },
-        {
-            code: 'second_24_24',
-            width: 24,
-            height: 24,
-            price: 10000,
-            stripeProductId: 'prod_QViQhi5vMthfBz',
-            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
-            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
-        }
+ 
     ];
 
     const insertedProductSizes = (await db.insert(productSize).values(productSizes)).rows;

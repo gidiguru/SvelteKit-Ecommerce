@@ -17,7 +17,7 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 	return buf;
 }
 
-export const POST = async ({ request }) => {
+export const POST = async ({ request }: { request: any }) => {
 	const endpointSecret = env.STRIPE_WEBHOOK_SECRET;
 
 	const _rawBody = await request.arrayBuffer();

@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 import { desc, inArray, like } from 'drizzle-orm';
 import { zfd } from 'zod-form-data';
 
-export const load = async ({ url }) => {
+export const load = async ({ url }: { url: any }) => {
 	const params = url.searchParams;
 	const allTags = params.getAll('tag');
 

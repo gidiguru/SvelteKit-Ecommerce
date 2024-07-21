@@ -5,7 +5,7 @@ import type Stripe from 'stripe';
 import { track } from '@vercel/analytics/server';
 
 export const actions = {
-	default: async (event) => {
+	default: async ({event} : { event: any }) => {
 		const body = (await event.request.json()) as TCartEntry[];
 
 		const user = event.locals.user;

@@ -3,7 +3,8 @@ import { product, productImage, productSize } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { and, asc, desc, eq } from 'drizzle-orm';
 
-export const load = async ({ params }) => {
+
+export const load = async ({ params }: { params: any }) => {
 	const firstProduct = await db.query.product.findFirst({
 		where: eq(product.id, params.productId),
 		with: {

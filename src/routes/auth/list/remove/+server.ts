@@ -3,7 +3,7 @@ import { emailList } from '$lib/server/db/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
-export const GET = async ({ url }) => {
+export const GET = async ({ url }: { url: any }) => {
 	const key = url.searchParams.get('key');
 	const email = url.searchParams.get('email');
 

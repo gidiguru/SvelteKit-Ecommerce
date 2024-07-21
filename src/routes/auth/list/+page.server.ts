@@ -6,7 +6,7 @@ import { zfd } from 'zod-form-data';
 import { sendThankYouListEmail } from '$lib/server/resend';
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request }: { request: any }) => {
 		const data = await request.formData();
 
 		const schema = zfd.formData({

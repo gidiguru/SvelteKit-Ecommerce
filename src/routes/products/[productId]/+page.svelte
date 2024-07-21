@@ -37,7 +37,7 @@
 
 
 <svelte:head>
-	<title>{data.product.name} | Sediment Art</title>
+	<title>{data.product.name} | Tech Shop</title>
 	<meta name="description" content={data.product.desc} />
 </svelte:head>
 

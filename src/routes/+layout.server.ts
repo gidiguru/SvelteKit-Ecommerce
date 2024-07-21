@@ -2,7 +2,7 @@ import { db } from '$lib/server/db/index';
 import { order, product, productTag, productToProductTag } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
-export const load = async ({ locals }) => {
+export const load = async ({ locals }: { locals: any }) => {
 	// figure out how many orders have been added, and send down a valid boolean
 	const orders = await db
 		.select({

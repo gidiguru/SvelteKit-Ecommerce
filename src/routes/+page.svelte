@@ -76,77 +76,17 @@
 		/> -->
 	</div>
 	<div class="w-full flex flex-col py-4 px-2 bg-black text-white">
-		<h3 class="text-center font-jura text-5xl pb-8 px-3">What is Sediment Art?</h3>
+		<h3 class="text-center font-jura text-5xl pb-8 px-3">What is The Tech Shop?</h3>
 		<p class="text-center text-lg font-light pb-4 px-3">
-			We take photos of the natural beauty in nature and the world, and print them onto glass for
-			you to display in your home or office.
+			We identify cutting edge technology products that make your life easier.
 		</p>
 
-		<p class="text-center text-lg font-light pb-8">
-			We sell made to order prints, and have them delivered right to your door.
-		</p>
 	</div>
-	<div class="w-full md:w-3/4 m-auto">
-		<h2 class="font-jura sm:text-4xl text-3xl text-center pt-8 pb-4">Natural Beauty in Glass</h2>
-		<p class=" text-lg text-center px-4 md:px-16 font-light">
-			What is this stunning artwork? They are photographs of rocks that are <span class="italic"
-				>millions</span
-			>
-			of years old, found in the United States,
-			<span class="italic">sliced and polished by hand.</span> Each rock has a unique story to tell.
-			James Cunningham Photography has turned them into works of art for your home.
-		</p>
-		<h2 class="font-jura sm:text-4xl text-3xl text-center pt-8 pb-4">Our Process</h2>
-		<p class=" text-lg text-center px-4 md:px-16 font-light pb-8">
-			Each piece is made to order, so once you order we will create your piece, get it packaged,
-			then have it sent out.
-		</p>
-	</div>
+
 	{#each data.collections as collection}
 		<ImageCollection collectionData={collection} />
 	{/each}
-	<!-- <ImageCollection
-		collectionData={{
-			name: 'Planes',
-			tagLine: 'Honor our history',
-			productInfo: [
-				{
-					cloudinaryId: 'koma4m6czs9xduorosab',
-					secondaryCloudinary: 'txvp48xxnytjd024vnye',
-					name: 'Molten Moon',
-					availableSizes: ['5x5', '4.8x6.4', '7.2x9.6', '11x11', '10.8x14.4'],
-					soldOutSizes: [],
-					link: '/products/my_second_product'
-				},
-				{
-					cloudinaryId: 'txvp48xxnytjd024vnye',
-					secondaryCloudinary: 'gfgvqtml3oujz2biaf9a',
-					name: 'Europan Frontier',
-					availableSizes: ['5x5', '4.8x6.4', '7.2x9.6'],
-					soldOutSizes: ['11x11', '10.8x14.4'],
-					link: '/products/my_first_product'
-				},
-				{
-					cloudinaryId: 'gfgvqtml3oujz2biaf9a',
-					secondaryCloudinary: 'txvp48xxnytjd024vnye',
-					name: 'Molten Moon',
-					availableSizes: ['5x5', '4.8x6.4', '10.8x14.4'],
-					soldOutSizes: ['7.2x9.6', '11x11'],
-					link: '/products/my_second_product'
-				},
-				{
-					cloudinaryId: 'txvp48xxnytjd024vnye',
-					secondaryCloudinary: 'gfgvqtml3oujz2biaf9a',
-					name: 'Europan Frontier',
-					availableSizes: ['7.2x9.6', '11x11', '10.8x14.4'],
-					soldOutSizes: ['5x5', '4.8x6.4'],
-					link: '/products/my_first_product'
-				}
-			],
-			dark: true,
-			collectionTag: 'Aerospace'
-		}}
-	/> -->
+	
 	<!-- ig embedding cant tell if I like or not -->
 	<blockquote
 		class="instagram-media"
