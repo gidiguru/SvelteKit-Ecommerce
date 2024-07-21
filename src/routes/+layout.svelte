@@ -35,9 +35,10 @@
 </svelte:head>
 
 <CldOgImage
-	src="zuciphtmipytgdxgdkdu"
+	src="ikbbfslp5lkzzwzghd2h"
 	alt="Sediment Art, Beauty Crystalized"
 	twitterTitle="Sediment Art, Beauty Crystalized"
+	height="1000px"
 />
 
 <body class="flex justify-between w-full flex-col min-h-screen">

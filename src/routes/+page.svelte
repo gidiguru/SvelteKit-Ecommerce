@@ -15,9 +15,9 @@
 			<div class="flex flex-row gap-4 items-center">
 				<img src={MobileLogo} alt="Sediment" class="h-[40px] sm:hidden flex" />
 
-				<h2 class="sm:text-5xl text-3xl font-jura">Sediment Collection</h2>
+				<h2 class="sm:text-5xl text-3xl font-jura">Tech Shop</h2>
 			</div>
-			<h4 class="font-light sm:text-3xl text-xl font-jura">Beauty. Crystallized.</h4>
+			<h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4>
 			<a
 				class="uppercase bg-black mt-14 px-7 py-3 font-light"
 				href="/products?tag=Sediment Collection"
@@ -48,7 +48,7 @@
 				height={900}
 				objectFit="cover"
 				alt="home banner"
-				opacity={90}
+
 			/>
 		</div>
 		<div
@@ -61,7 +61,7 @@
 				height={1000}
 				objectFit="cover"
 				alt="home banner"
-				opacity={80}
+
 			/>
 		</div>
 		<!-- <img

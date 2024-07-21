@@ -1,10 +1,10 @@
-    // SEED THE DB
+// SEED THE DB
 import {
-	product,
-	productImage,
-	productSize,
-	productTag,
-	productToProductTag
+    product,
+    productImage,
+    productSize,
+    productTag,
+    productToProductTag
 } from './schema';
 
 //import {db} from './index';
@@ -13,184 +13,181 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from './schema';
 import pg from 'pg';
 
-
 dotenv.config()
 const { Pool } = pg;
 
-	//connect to db
-	const pool = new Pool({ connectionString: process.env.DATABASE_CONNECTION_STRING });
-	const db = drizzle(pool, { schema });
-	//export default pool
-	
+    //connect to db
+    const pool = new Pool({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+    const db = drizzle(pool, { schema });
+    //export default pool
+    
 const seed = async () => {
 
-	console.log("seeding db...")
-	//console.log(db)
+    console.log("seeding db...")
+    //console.log(db)
 
-	// create some products
-	const products = [
-		{
-			name: 'Demo Stripe Product',
-			desc: 'A test product, the first test product made testing testing testing testing',
-			// can be whatever
-			id: 'my_first_product'
-		},
-		{
-			name: 'My Second Product',
-			desc: 'A second test product...',
-			id: 'my_second_product'
-		}
-	];
+    // create some products
+    const products = [
+        {
+            name: 'Ugreen PowerRoam 1200W 1024Wh LiFePO4 Battery Backup Solar Generator',
+            desc: '1200W AC Output, up to 2500W w/ U-Turbo50 Minutes 0 to 80% Battery13 Ports for Any Power NeedEasy App Control5-Year Full-Device Warranty',
+            // can be whatever
+            id: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            name: 'Ugreen 6-in-1 4K HDMI USB C Hub',
+            desc: 'UGREEN Premium 6-in-1 USB C Hub Conveniently adds more connections to your laptop, easily switch between your devices. Mirror or extend your screen with USB C to USB adapters HDMI port and directly stream 4K@30Hz UHD or full HD 1080P video to HDTV.',
+            id: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        }
+    ];
 
-	const insertedProducts = (await db.insert(product).values(products)).rows;
+    const insertedProducts = (await db.insert(product).values(products)).rows;
 
-	console.log(`INSERTED: ${insertedProducts.length} products`);
+    console.log(`INSERTED: ${insertedProducts.length} products`);
 
+    // create some product sizes
+    // TODO STRIPE:
+    // replace the stripeProductId and stripePriceId which you get from the dashboard
+    const productSizes = [
+        {
+            code: 'first_12_12',
+            width: 12,
+            height: 12,
+            price: 5000,
+            stripeProductId: 'prod_QVdISPK4gMFkZp',
+            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
+            productId: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            code: 'first_16_16',
+            width: 16,
+            height: 16,
+            price: 7000,
+            stripeProductId: 'prod_QVdISPK4gMFkZp',
+            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
+            productId: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            code: 'first_24_24',
+            width: 24,
+            height: 24,
+            price: 10000,
+            stripeProductId: 'prod_QVdISPK4gMFkZp',
+            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
+            productId: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            code: 'second_12_12',
+            width: 12,
+            height: 12,
+            price: 5000,
+            stripeProductId: 'prod_QViQhi5vMthfBz',
+            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        },
+        {
+            code: 'second_16_16',
+            width: 16,
+            height: 16,
+            price: 7000,
+            stripeProductId: 'prod_QViQhi5vMthfBz',
+            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        },
+        {
+            code: 'second_24_24',
+            width: 24,
+            height: 24,
+            price: 10000,
+            stripeProductId: 'prod_QViQhi5vMthfBz',
+            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        }
+    ];
 
-	// create some product sizes
-	// TODO STRIPE:
-	// replace the stripeProductId and stripePriceId which you get from the dashboard
-	const productSizes = [
-		{
-			code: 'first_12_12',
-			width: 12,
-			height: 12,
-			price: 5000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_first_product'
-		},
-		{
-			code: 'first_16_16',
-			width: 16,
-			height: 16,
-			price: 7000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_first_product'
-		},
-		{
-			code: 'first_24_24',
-			width: 24,
-			height: 24,
-			price: 10000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_first_product'
-		},
-		{
-			code: 'second_12_12',
-			width: 12,
-			height: 12,
-			price: 5000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_second_product'
-		},
-		{
-			code: 'second_16_16',
-			width: 16,
-			height: 16,
-			price: 7000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_second_product'
-		},
-		{
-			code: 'second_24_24',
-			width: 24,
-			height: 24,
-			price: 10000,
-			stripeProductId: 'prod_OyCy8ckhrmV0IM',
-			stripePriceId: 'price_1OAGYBDVy0rtNA6WZ7fSwK2d',
-			productId: 'my_second_product'
-		}
-	];
+    const insertedProductSizes = (await db.insert(productSize).values(productSizes)).rows;
 
-	const insertedProductSizes = (await db.insert(productSize).values(productSizes)).rows;
+    console.log(`INSERTED: ${insertedProductSizes.length} product sizes`);
 
-	console.log(`INSERTED: ${insertedProductSizes.length} product sizes`);
+    // create some product images
+    // TODO CLOUDINARY: update the cloudinaryIds with your own cloudinary ids
+    const images = [
+        {
+            cloudinaryId: 'zhmgawwsktqqnwr0upwb',
+            width: 1920,
+            height: 1280,
+            productId: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            cloudinaryId: 'pqlryc6t5xcx06kcgowy',
+            width: 1920,
+            height: 1280,
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        },
+        {
+            cloudinaryId: 'ikbbfslp5lkzzwzghd2h',
+            width: 1920,
+            height: 1280,
+            productId: 'Ugreen_PowerRoam_1200W'
+        },
+        {
+            cloudinaryId: 'q16zs3p7yrsrq1rt2i1m',
+            width: 1920,
+            height: 1280,
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
+        }
+    ];
 
-	// create some product images
-	// TODO CLOUDINARY: update the cloudinaryIds with your own cloudinary ids
-	const images = [
-		{
-			cloudinaryId: 'txvp48xxnytjd024vnye',
-			width: 1920,
-			height: 1280,
-			productId: 'my_first_product'
-		},
-		{
-			cloudinaryId: 'gfgvqtml3oujz2biaf9a',
-			width: 1920,
-			height: 1280,
-			productId: 'my_second_product'
-		},
-		{
-			cloudinaryId: 'zav59raocmm7xmxrzgc4',
-			width: 1920,
-			height: 1280,
-			productId: 'my_first_product'
-		},
-		{
-			cloudinaryId: 'iquk9myxvuqrtc3xbwqc',
-			width: 1920,
-			height: 1280,
-			productId: 'my_second_product'
-		}
-	];
+    const insertedImages = (await db.insert(productImage).values(images)).rows;
 
-	const insertedImages = (await db.insert(productImage).values(images)).rows;
+    console.log(`INSERTED: ${insertedImages.length} product images`);
 
-	console.log(`INSERTED: ${insertedImages.length} product images`);
+    // create some product tags
+    const productTags = [
+        {
+            name: 'Power-Station',
+            desc: 'Portable Power Supplies...'
+        },
+        {
+            name: 'Hubs',
+            desc: 'Connections to devices'
+        }
+    ];
 
-	// create some product tags
-	const productTags = [
-		{
-			name: 'Natural',
-			desc: 'Anything formed in nature...'
-		},
-		{
-			name: 'Aerospace',
-			desc: 'Planes, spaceships, & more...'
-		}
-	];
+    const insertedTags = (await db.insert(productTag).values(productTags)).rows;
 
-	const insertedTags = (await db.insert(productTag).values(productTags)).rows;
+    console.log(`INSERTED ${insertedTags.length} product tags`);
 
-	console.log(`INSERTED ${insertedTags.length} product tags`);
+    // attach tags to products
+    const productsToTags = [
+        {
+            productId: 'Ugreen_PowerRoam_1200W',
+            tagId: 'Power-Station'
+        },
+        {
+            productId: 'Ugreen-6-in-1-4K-USB-C-Hub',
+            tagId: 'Hubs'
+        }
+    ];
 
-	// attach tags to products
-	const productsToTags = [
-		{
-			productId: 'my_first_product',
-			tagId: 'Natural'
-		},
-		{
-			productId: 'my_second_product',
-			tagId: 'Aerospace'
-		}
-	];
+    const insertedTagsToProducts = (await db.insert(productToProductTag).values(productsToTags)).rows;
 
-	const insertedTagsToProducts = (await db.insert(productToProductTag).values(productsToTags)).rows;
+    console.log(`INSERTED ${insertedTagsToProducts.length} product tag relations`);
 
-	console.log(`INSERTED ${insertedTagsToProducts.length} product tag relations`);
-
-	console.log("...completed seeding")
+    console.log("...completed seeding")
 };
 
-
 const drop = async () => {
-	await db.delete(product)
-	await db.delete(productSize)
-	await db.delete(productImage)
-	await db.delete(productTag)
-	await db.delete(productToProductTag)
-	console.log("deleted everything")
+    await db.delete(product)
+    await db.delete(productSize)
+    await db.delete(productImage)
+    await db.delete(productTag)
+    await db.delete(productToProductTag)
+    console.log("deleted everything")
 }
-
 
 seed()
 
 //drop()
+
 

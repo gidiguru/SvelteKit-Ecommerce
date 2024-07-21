@@ -34,7 +34,7 @@
 	}
 </script>
 
-<CldOgImage src={data.primaryImage?.cloudinaryId} alt={data.product.desc} />
+
 
 <svelte:head>
 	<title>{data.product.name} | Sediment Art</title>

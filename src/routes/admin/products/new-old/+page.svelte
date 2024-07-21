@@ -142,7 +142,7 @@
 			class="px-4 py-2 rounded-lg border-gray-900 bg-white text-gray-900 border font-semibold hover:bg-gray-200"
 			onUpload={(res) => {
 				if (res.event === 'success') {
-					addImage(res.info);
+//					addImage(res.info);
 				}
 			}}
 		/>
