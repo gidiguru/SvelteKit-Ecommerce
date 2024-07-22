@@ -147,7 +147,7 @@
 					style={`background-image: linear-gradient(to right bottom, ${data.product.gradientColorStart}, ${data.product.gradientColorVia}, ${data.product.gradientColorStop} );`}
 					>Sizes.</span
 				>
-				<span class=" text-2xl text-gray-500 font-jura">Which one fits you best?</span>
+				<!-- <span class=" text-2xl text-gray-500 font-jura">Which one fits you best?</span> -->
 			</div>
 
 			{#each data.product.sizes as size, i}
@@ -174,8 +174,10 @@
 					</button>
 				</div>
 			{/each}
+
+
 			<Button
-				class={`bg-white drop-shadow-md hover:bg-black text-lg p-7 font-light`}
+				class={`drop-shadow-md hover:bg-black text-lg p-7 font-light`}
 				disabled={data.isSoldOut}
 				on:click={() => {
 					addToCart({
@@ -195,7 +197,7 @@
 				}}
 			>
 				<div
-					class={` text-transparent bg-clip-text `}
+					class={` text-lg bg-clip-text `}
 					style={`background-image: linear-gradient(to right bottom, ${data.product.gradientColorStart}, ${data.product.gradientColorVia}, ${data.product.gradientColorStop} );`}
 				>
 					{#if data.isSoldOut}
@@ -205,13 +207,17 @@
 					{/if}
 				</div>
 			</Button>
+
+
+			<!-- 
 			<div class="text-lg text-gray-500 font-light">
 				Order now and get an exclusive print for free as part of our launch event!
 			</div>
+			-->
 		</div>
 	</div>
 
-	<div class="flex flex-col items-center gap-y-4 md:w-1/2 m-auto text-center px-3">
+			<!--<div class="flex flex-col items-center gap-y-4 md:w-1/2 m-auto text-center px-3">
 		<h2 class="font-jura text-5xl py-6 text-neutral-800">Enhance Your Space</h2>
 		<p class="text-xl font-light text-neutral-700">
 			Sediment Art pieces are the perfect accent to your office, living room, or any other space.
@@ -224,10 +230,10 @@
 			Each piece is made to order. We are just starting out and hope to have you on this journey
 			with us.
 		</p>
-	</div>
+	</div> -->
 
 	<!-- IG EMBED -->
-	<blockquote
+	<!-- <blockquote
 		class="instagram-media"
 		data-instgrm-permalink="https://www.instagram.com/sediment.art/?utm_source=ig_embed&amp;utm_campaign=loading"
 		data-instgrm-version="14"
@@ -341,6 +347,7 @@
 			</p>
 		</div>
 	</blockquote>
+	-->
 	<script async src="//www.instagram.com/embed.js"></script>
 </div>
 

@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>Sediment Art</title>
+	<title>Tech Shop</title>
 	<meta
 		name="description"
 		content="Sediment Art, beauty crystalized and shipped straight to you."
@@ -60,7 +60,7 @@
 				/>
 			</svg>
 		</button>
-		<a href="/products">All Pieces</a>
+		<a href="/products">All Products</a>
 		{#each data.collections as collection}
 			<div>
 				<a href={'/products?tag=' + collection.collection}>{collection.collection}</a>
@@ -82,7 +82,7 @@
 			<Alert.Description>Please proceed to the cart to checkout.</Alert.Description>
 		</Alert.Root>
 	</div>
-	<SpecialOffer isSoldOut={data.isSoldOut} remaining={data.numberLeft} />
+	<!--<SpecialOffer isSoldOut={data.isSoldOut} remaining={data.numberLeft} /> -->
 	<NavBar user={data.user} pieces={data.pieces} />
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<span on:mouseenter={handleRemoveMenu} class="grow bg-neutral-100">

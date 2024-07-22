@@ -5,10 +5,10 @@ import type Stripe from 'stripe';
 import { track } from '@vercel/analytics/server';
 
 export const actions = {
-	default: async ({event} : { event: any }) => {
-		const body = (await event.request.json()) as TCartEntry[];
+	default: async ({request, url, locals}) => {
+		const body = (await request.json()) as TCartEntry[];
 
-		const user = event.locals.user;
+		const user = locals.user;
 
 		const customerId = user ? user.stripeCustomerId ?? undefined : undefined;
 
@@ -69,8 +69,8 @@ export const actions = {
 				userId: user ? user.id : ''
 			},
 			mode: 'payment',
-			success_url: `${event.url.origin}/status/checkout/success`,
-			cancel_url: `${event.url.origin}/status/checkout/fail`,
+			success_url: `${url.origin}/status/checkout/success`,
+			cancel_url: `${url.origin}/status/checkout/fail`,
 			automatic_tax: { enabled: true },
 			billing_address_collection: 'required'
 		});

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import Logo from '$lib/client/images/logo_light.png';
-	import MobileLogo from '$lib/client/images/mobile_logo_light.png';
+	import Logo from '$lib/client/images/techshopng-logo.jpg';
+	import MobileLogo from '$lib/client/images/techshopng-logo.jpg';
 	import { CldImage } from 'svelte-cloudinary';
 	import { cartLengthStore } from '$lib/client/cart';
 	export let user: {
@@ -44,17 +44,17 @@
 	>
 		<div class="col-span-1 w-full overflow-hidden">
 			<!-- CLD IMAGE SWITCH NEEDED -->
-			<CldImage
+		<!--	<CldImage
 				width={500 * 2}
 				height={400 * 2}
 				src={'products/a3mazygrqkbbcoqnjszp' || 'https://via.placeholder.com/355x200'}
 				alt="Description of my image"
 				class="shadow-md"
 				sizes="100vw"
-			/>
+			/> -->
 		</div>
 		<div class="flex flex-col p-6 overflow-y-scroll">
-			<div class="px-4 py-0 rounded-md text-gray-500 font-extralight text-sm">Pieces</div>
+			<div class="px-4 py-0 rounded-md text-gray-500 font-extralight text-sm">Products</div>
 			{#each pieces as piece}
 				<a
 					href={`/products/${piece.id}`}
@@ -63,20 +63,19 @@
 			{/each}
 		</div>
 		<div class="flex flex-col p-6 overflow-y-scroll">
-			<div class="px-4 py-0 rounded-md text-gray-500 font-extralight text-sm">Collections</div>
+			<div class="px-4 py-0 rounded-md text-gray-500 font-extralight text-sm">Categories</div>
 			<a href="/products" class="px-4 py-3 rounded-md hover:text-gray-600 cursor-pointer font-jura"
-				>All Pieces</a
+				>All Products</a
 			>
-			<a
-				href="/products?tag=Sediment Collection"
+				<a
+				href="/products?tag=Power-Station"
 				class="px-4 py-3 rounded-md hover:text-gray-600 cursor-pointer font-jura"
-				>Sediment Collection</a
-			>
-			<a
-				href="/products?tag=Honor Collection"
+				>Power Stations</a>
+			
+				<a
+				href="/localhost:5173/products?tag=Hubs"
 				class="px-4 py-3 rounded-md hover:text-gray-600 cursor-pointer font-jura"
-				>Honor Collection</a
-			>
+				>Hubs</a>
 		</div>
 	</div>
 
@@ -91,7 +90,7 @@
 			class="text-black uppercase font-jura flex flex-row items-center"
 			on:mouseenter={handleCollectionsHover}
 		>
-			Collections
+			Categories
 			<svg
 				width="24"
 				height="45"

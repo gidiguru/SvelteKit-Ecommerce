@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MobileLogo from '$lib/client/images/mobile_logo.png';
+	import MobileLogo from '$lib/client/images/techshopng-logo.jpg';
 	import ImageCollection from '$lib/components/ImageCollection.svelte';
 
 	import { CldImage } from 'svelte-cloudinary';
@@ -13,14 +13,14 @@
 			class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2"
 		>
 			<div class="flex flex-row gap-4 items-center">
-				<img src={MobileLogo} alt="Sediment" class="h-[40px] sm:hidden flex" />
+				<img src={MobileLogo} alt="TechShopNG" class="h-[40px] sm:hidden flex" />
 
 				<h2 class="sm:text-5xl text-3xl font-jura">Tech Shop</h2>
 			</div>
 			<h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4>
 			<a
 				class="uppercase bg-black mt-14 px-7 py-3 font-light"
-				href="/products?tag=Sediment Collection"
+				href="/products"
 			>
 				shop now</a
 			>
@@ -43,7 +43,7 @@
 		>
 			<!-- CLD IMAGE SWITCH NEEDED -->
 			<CldImage
-				src={'products/kmqvpskg70djyzlv6l0x'}
+				src={'products/zhmgawwsktqqnwr0upwb'}
 				width={1920}
 				height={900}
 				objectFit="cover"
@@ -75,19 +75,20 @@
 			src={mobileImgs[imgNum]}
 		/> -->
 	</div>
-	<div class="w-full flex flex-col py-4 px-2 bg-black text-white">
+		<!--	<div class="w-full flex flex-col py-4 px-2 bg-black text-white">
 		<h3 class="text-center font-jura text-5xl pb-8 px-3">What is The Tech Shop?</h3>
 		<p class="text-center text-lg font-light pb-4 px-3">
 			We identify cutting edge technology products that make your life easier.
 		</p>
 
-	</div>
+	</div> -->
 
 	{#each data.collections as collection}
 		<ImageCollection collectionData={collection} />
 	{/each}
 	
 	<!-- ig embedding cant tell if I like or not -->
+	<!--
 	<blockquote
 		class="instagram-media"
 		data-instgrm-permalink="https://www.instagram.com/sediment.art/?utm_source=ig_embed&amp;utm_campaign=loading"
@@ -202,5 +203,6 @@
 			</p>
 		</div>
 	</blockquote>
+	-->
 	<script async src="//www.instagram.com/embed.js"></script>
 </main>
