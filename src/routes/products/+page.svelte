@@ -18,15 +18,15 @@
 	let displayMode = 'sm';
 
 	// this feels really stupid...
-	$: searchQuery !== '' && handleInputChange(searchQuery);
+//	$: searchQuery !== '' && handleInputChange(searchQuery);
 
-	function handleInputChange(query: string) {
-		clearTimeout(debounceTimer);
+//	function handleInputChange(query: string) {
+//		clearTimeout(debounceTimer);
 
-		debounceTimer = setTimeout(() => {
-			handleSearch(query);
-		}, 400);
-	}
+//		debounceTimer = setTimeout(() => {
+//			handleSearch(query);
+//		}, 400);
+//	}
 
 	function addParam(param: string) {
 		const curParams = $page.url.searchParams.getAll('tag');

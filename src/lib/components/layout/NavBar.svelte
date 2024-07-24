@@ -73,7 +73,7 @@
 				>Power Stations</a>
 			
 				<a
-				href="/localhost:5173/products?tag=Hubs"
+				href="/products?tag=Hubs"
 				class="px-4 py-3 rounded-md hover:text-gray-600 cursor-pointer font-jura"
 				>Hubs</a>
 		</div>
