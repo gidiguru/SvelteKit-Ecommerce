@@ -2,6 +2,9 @@
 
 import { Button, Container, Head, Hr, Html, Img, Preview, Section, Text } from 'svelte-email';
 
+export const email: string;
+
+
 const baseUrl = import.meta.env.VERCEL_URL
 	? `https://${import.meta.env.VERCEL_URL}`
 	: 'http://localhost:5173';
@@ -52,12 +55,7 @@ const baseUrl = import.meta.env.VERCEL_URL
 						<Text class="text-black text-[12px] leading-[4px] ml-1 italic">
 							Sediment Art Team
 						</Text>
-						<a
-						class="text-[#666666] text-[12px] leading-[24px]"
-						href={`${baseUrl}/auth/list/remove?key=${unsubKey}&email=${email}`}
-					>
-						unsubscribe
-				</a>
+
 					</Container>
 				</Container>
 		</Html>

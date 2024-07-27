@@ -6,9 +6,12 @@
 	import { enhance } from '$app/forms';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
-	import { env } from '$env/dynamic/public';
+	//import { env } from '$env/dynamic/public';
+	import dotenv from 'dotenv'
 
 	export let data;
+
+	dotenv.config();
 
 	// TODO type this up
 	async function handleSubmit(info: unknown) {
@@ -109,7 +112,7 @@
 	</div>
 	<div class="w-full flex flex-row justify-end">
 		<CldUploadButton
-			uploadPreset={env.PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+			uploadPreset={process.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET}
 			signatureEndpoint="/api/cloudinary"
 			class="px-4 py-2 rounded-lg border-gray-900 bg-white text-gray-900 border font-semibold hover:bg-gray-200"
 			onUpload={(res) => {

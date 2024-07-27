@@ -1,4 +1,7 @@
-import { env } from '$env/dynamic/private';
+//import { env } from '$env/dynamic/private';
 import Stripe from 'stripe';
+import dotenv from 'dotenv'
 
-export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+dotenv.config();
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);

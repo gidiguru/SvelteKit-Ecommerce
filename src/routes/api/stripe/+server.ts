@@ -1,12 +1,16 @@
-import { env } from '$env/dynamic/private';
+//import { env } from '$env/dynamic/private';
 import { createNewOrder, createNewOrderProduct } from '$lib/server/data/orders';
 import { db } from '$lib/server/db/index';
 import { user } from '$lib/server/db/schema';
-import { sendThankYouPurchaseEmail } from '$lib/server/resend.js';
+import { sendThankYouPurchaseEmail } from '$lib/server/resend.ts';
 import { stripe } from '$lib/server/stripe';
 import { error, json } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import type Stripe from 'stripe';
+import dotenv from 'dotenv';
+
+dotenv.config()
+
 
 function toBuffer(ab: ArrayBuffer): Buffer {
 	const buf = Buffer.alloc(ab.byteLength);
@@ -18,7 +22,7 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 }
 
 export const POST = async ({ request }: { request: any }) => {
-	const endpointSecret = env.STRIPE_WEBHOOK_SECRET;
+	const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
 	const _rawBody = await request.arrayBuffer();
 	const payload = toBuffer(_rawBody);

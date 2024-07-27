@@ -1,19 +1,16 @@
 import { Resend } from 'resend';
-import { render } from 'svelte-email';
-import SedimentListThankYou from '$lib/emails/sediment-list-thank-you.svelte';
-import SedimentPurchaseThankYou from '$lib/emails/sediment-purchase-thank-you.svelte';
+//import { render } from 'svelte-email';
+import {renderThankYouListEmail} from '$lib/emails/renderEmailTemplate.js';
+import {renderPurchaseThankYouEmail} from '$lib/emails/renderEmailTemplate.js';
+//import SedimentPurchaseThankYou from '$lib/emails/sediment-purchase-thank-you.svelte';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const sendThankYouListEmail = async (email, unsubKey): Promise<> => {
+export const sendThankYouListEmail = async (email: string, unsubKey: string): Promise<void> => {
     try {
-        const html = await render({
-            template: SedimentListThankYou,
-            props: {
-                unsubKey,
-                email
-            }
-        });
+        const html = await renderThankYouListEmail({unsubKey,
+                email});
+        
 
         const { data, error } = await resend.emails.send({
             from: 'joguno@petraton.com',
@@ -34,12 +31,7 @@ export const sendThankYouListEmail = async (email, unsubKey): Promise<> => {
 
 export const sendThankYouPurchaseEmail = async (email: string): Promise<void> => {
     try {
-        const html = await render({
-            template: SedimentPurchaseThankYou,
-            props: {
-
-            }
-        });
+        const html = await renderPurchaseThankYouEmail({email});
 
         const { data, error } = await resend.emails.send({
             from: 'joguno@petraton.com',

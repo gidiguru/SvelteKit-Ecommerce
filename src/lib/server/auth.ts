@@ -2,9 +2,7 @@
 //	GOOGLE_CLIENT_ID,
 //	GOOGLE_CLIENT_SECRET
 //} from '$env/static/private';
-
-import {GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET} from '$env/static/private';
-
+import dotenv from 'dotenv'
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { redirect } from '@sveltejs/kit';
 import { GitHub, Google } from 'arctic';
@@ -12,7 +10,14 @@ import { Lucia } from 'lucia';
 import { db } from './db';
 import { session, user } from './db/schema';
 
+dotenv.config();
+
 const adapter = new DrizzlePostgreSQLAdapter(db, session, user);
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID as string;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET as string;
+
+//import {GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET} from '$env/static/private';
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 
