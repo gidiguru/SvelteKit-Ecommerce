@@ -1,6 +1,6 @@
-
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { stripe } from '$lib/server/stripe';
 import { handleStripeWebhook } from '$lib/server/stripe-webhook-handler';
 import dotenv from 'dotenv';
 
@@ -30,7 +30,8 @@ export const POST: RequestHandler = async ({ request }) => {
     const signature = request.headers.get('stripe-signature') ?? '';
     
     try {
-        const result = await handleStripeWebhook(payload, signature, endpointSecret);
+        const event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+        const result = await handleStripeWebhook(event);
         return json(result);
     } catch (err) {
         console.error(`Error processing webhook:`, err);
