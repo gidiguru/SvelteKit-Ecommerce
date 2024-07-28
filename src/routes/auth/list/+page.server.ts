@@ -3,7 +3,7 @@ import { emailList } from '$lib/server/db/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
 import { zfd } from 'zod-form-data';
-import { sendThankYouListEmail } from '$lib/server/resend';
+import { sendWelcomeEmail } from '$lib/emails/welcome-email';
 
 export const actions = {
 	default: async ({ request }: { request: any }) => {
@@ -27,7 +27,7 @@ export const actions = {
 			subscribedAt: new Date()
 		});
 
-		await sendThankYouListEmail(res.data.email, key);
+		await sendWelcomeEmail(res.data.email, key);
 
 		redirect(303, '/');
 	}

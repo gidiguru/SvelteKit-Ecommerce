@@ -1,8 +1,8 @@
 <script lang="ts">
 
-import { Button, Container, Head, Hr, Html, Img, Preview, Section, Text } from 'svelte-email';
+import { Button, Container, Head, Hr, Html, Img, Preview, Section, Text } from 'svelty-email';
 
-export const email: string;
+//export let email: string;
 
 
 const baseUrl = import.meta.env.VERCEL_URL

@@ -1,6 +1,6 @@
 <script lang="ts">
 
-import { Button, Container, Head, Hr, Html, Img, Preview, Section, Text } from 'svelte-email';
+import { Button, Container, Head, Hr, Html, Img, Preview, Section, Text } from 'svelty-email';
 
 export let unsubKey: string;
 export let email: string;
