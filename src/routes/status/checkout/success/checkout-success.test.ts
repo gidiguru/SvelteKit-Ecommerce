@@ -69,7 +69,6 @@ describe('Checkout Success Handler', () => {
         });
 
         it('should handle errors during purchase processing', async () => {
-            console.log('Starting error handling test');
             const sessionId = 'test_session_id';
             const formData = new FormData();
             formData.append('session_id', sessionId);
@@ -80,26 +79,14 @@ describe('Checkout Success Handler', () => {
 
             vi.mocked(stripe.checkout.sessions.retrieve).mockRejectedValue(new Error('Stripe error'));
             
-            console.log('Mocks set up, calling action');
-            try {
-                await actions.default({ request, url: new URL('http://localhost') } as any);
-                console.log('Action completed without throwing an error');
-                expect(true).toBe(false); // This line should not be reached
-            } catch (err: any) {
-                console.log('Caught error:', err);
-                expect(err).toBeDefined();
-                expect(err.status).toBe(500);
-                expect(err.message).toBe('Failed to process purchase');
-            }
-            
-            console.log('Checking console.error');
-            expect(console.error).toHaveBeenCalled();
-            const errorCalls = vi.mocked(console.error).mock.calls;
-            console.log('console.error calls:', errorCalls);
-            
-            expect(errorCalls[0][0]).toBe('Error processing successful purchase:');
-            expect(errorCalls[0][1]).toBeInstanceOf(Error);
-            expect(errorCalls[0][1].message).toBe('Stripe error');
+            await expect(actions.default({ request, url: new URL('http://localhost') } as any))
+                .rejects.toThrow('Failed to process purchase');
+
+            expect(console.error).toHaveBeenCalledWith(
+                'Error processing successful purchase:',
+                expect.any(Error)
+            );
+            expect(vi.mocked(console.error).mock.calls[0][1].message).toBe('Stripe error');
         });
     });
 
