@@ -1,4 +1,5 @@
 import type { TCartEntry } from '$lib/client/cart.js';
+import type { clearCart } from '$lib/client/cart.js';
 import { stripe } from '$lib/server/stripe';
 import { error, redirect } from '@sveltejs/kit';
 import type Stripe from 'stripe';
@@ -69,7 +70,7 @@ export const actions = {
 				userId: user ? user.id : ''
 			},
 			mode: 'payment',
-			success_url: `${url.origin}/status/checkout/success`,
+			success_url: `${url.origin}/status/checkout/success?clear_cart=true`,
 			cancel_url: `${url.origin}/status/checkout/fail`,
 			automatic_tax: { enabled: true },
 			billing_address_collection: 'required'
