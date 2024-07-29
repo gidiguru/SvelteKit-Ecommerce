@@ -3,7 +3,7 @@ import { emailList } from '$lib/server/db/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
 import { zfd } from 'zod-form-data';
-import { sendWelcomeEmail } from '$lib/emails/welcome-email';
+import { sendWelcomeEmail } from '$lib/emails/welcome-email.ts';
 
 export const actions = {
 	default: async ({ request }: { request: any }) => {
