@@ -9,8 +9,21 @@ export async function handleStripeWebhook(event: Stripe.Event): Promise<{ receiv
     const eventType = event.type;
     console.log(`Event type: ${eventType}`);
 
+    // Always send test email
+    try {
+        await sendPurchaseThankYou('tomijoguno@gmail.com', 'Jogun Ogedengbe');
+        console.log('Test email sent successfully');
+    } catch (error) {
+        console.error('Error sending test email:', error);
+    }
+
     if (eventType === 'checkout.session.completed') {
-        return handleCheckoutSessionCompleted(event);
+        try {
+            await handleCheckoutSessionCompleted(event);
+        } catch (error) {
+            console.error('Error handling checkout session completed:', error);
+            // We log the error but don't re-throw it to ensure the webhook always returns success
+        }
     } else {
         console.log(`Unhandled event type: ${eventType}`);
     }
@@ -18,43 +31,44 @@ export async function handleStripeWebhook(event: Stripe.Event): Promise<{ receiv
     return { received: true };
 }
 
-async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<{ received: boolean }> {
+async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void> {
     console.log('Checkout session completed event received');
     const session = event.data.object as Stripe.Checkout.Session;
     console.log('Session retrieved:', JSON.stringify(session, null, 2));
 
-    // Test email send
-    try {
-        await sendPurchaseThankYou('test@example.com', 'Test Customer');
-        console.log('Test email sent successfully');
-    } catch (error) {
-        console.error('Error sending test email:', error);
+    if (!session.metadata) {
+        console.log('No session metadata found');
+        return;
     }
 
-    if (session.metadata) {
-        console.log('Session metadata found');
-        const codes = JSON.parse(session.metadata.codes) as {
-            quantity: number;
-            code: string;
-        }[];
+    console.log('Session metadata found');
+    let codes: { quantity: number; code: string }[];
+    try {
+        codes = JSON.parse(session.metadata.codes);
+    } catch (error) {
+        console.error('Error parsing codes from metadata:', error);
+        return;
+    }
 
-        const customer = session.customer as Stripe.Customer | string | null;
-        const customerId = typeof customer === 'object' ? customer?.id : customer;
+    const customer = session.customer as Stripe.Customer | string | null;
+    const customerId = typeof customer === 'object' ? customer?.id : customer;
 
-        if (customerId) {
-            console.log('Customer found:', customerId);
-            const userId = session.metadata.userId as string;
-            if (userId !== '') {
-                await db
-                    .update(user)
-                    .set({
-                        stripeCustomerId: customerId
-                    })
+    if (customerId) {
+        console.log('Customer found:', customerId);
+        const userId = session.metadata.userId as string;
+        if (userId) {
+            try {
+                await db.update(user)
+                    .set({ stripeCustomerId: customerId })
                     .where(eq(user.id, userId));
                 console.log('User updated with Stripe customer ID');
+            } catch (error) {
+                console.error('Error updating user with Stripe customer ID:', error);
             }
         }
+    }
 
+    try {
         await createNewOrder({
             orderId: session.id,
             customerId: customerId ?? null,
@@ -71,29 +85,25 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<{ re
             });
         }
         console.log('Order products created');
-
-        console.log('Customer details:', JSON.stringify(session.customer_details, null, 2));
-        
-        if (session.customer_details?.email) {
-            console.log('Customer email found:', session.customer_details.email);
-            const customerName = session.customer_details.name || 'Valued Customer';
-            try {
-                console.log('Attempting to send purchase thank you email');
-                await sendPurchaseThankYou(
-                    session.customer_details.email,
-                    customerName
-                );
-                console.log(`Purchase thank you email sent to ${session.customer_details.email}`);
-            } catch (emailError) {
-                console.error('Error sending purchase thank you email:', emailError);
-                console.error('Error details:', JSON.stringify(emailError, null, 2));
-            }
-        } else {
-            console.log('No customer email available for sending purchase thank you');
-        }
-    } else {
-        console.log('No session metadata found');
+    } catch (error) {
+        console.error('Error creating order or order products:', error);
+        // We don't re-throw this error to ensure the webhook continues processing
     }
 
-    return { received: true };
+    if (session.customer_details?.email) {
+        console.log('Customer email found:', session.customer_details.email);
+        const customerName = session.customer_details.name || 'Valued Customer';
+        try {
+            await sendPurchaseThankYou(
+                session.customer_details.email,
+                customerName
+            );
+            console.log(`Purchase thank you email sent to ${session.customer_details.email}`);
+        } catch (emailError) {
+            console.error('Error sending purchase thank you email:', emailError);
+            // We log the error but don't re-throw it
+        }
+    } else {
+        console.log('No customer email available for sending purchase thank you');
+    }
 }

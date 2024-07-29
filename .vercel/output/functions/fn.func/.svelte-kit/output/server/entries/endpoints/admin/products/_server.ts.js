@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../chunks/auth.js";
 import { d as deleteOneProduct } from "../../../../chunks/products.js";
-import { j as json } from "../../../../chunks/index.js";
+import { j as json } from "../../../../chunks/index2.js";
 const DELETE = async ({ locals, url }) => {
   ensureAdmin(locals);
   const productId = url.searchParams.get("productId");

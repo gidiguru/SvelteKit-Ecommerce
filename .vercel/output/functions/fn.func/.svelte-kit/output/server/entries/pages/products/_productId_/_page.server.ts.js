@@ -1,5 +1,5 @@
-import { d as db, a as product, c as productImage, f as productSize } from "../../../../chunks/index2.js";
-import { e as error } from "../../../../chunks/index.js";
+import { d as db, a as product, c as productImage, f as productSize } from "../../../../chunks/index.js";
+import { e as error } from "../../../../chunks/index2.js";
 import { eq, desc, and, asc } from "drizzle-orm";
 const load = async ({ params }) => {
   const firstProduct = await db.query.product.findFirst({

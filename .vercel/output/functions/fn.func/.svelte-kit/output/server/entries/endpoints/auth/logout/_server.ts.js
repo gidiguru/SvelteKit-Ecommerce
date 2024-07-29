@@ -1,5 +1,5 @@
 import { l as lucia } from "../../../../chunks/auth.js";
-import { r as redirect } from "../../../../chunks/index.js";
+import { r as redirect } from "../../../../chunks/index2.js";
 const GET = async (event) => {
   if (!event.locals.session)
     ;

@@ -1,6 +1,5 @@
 import { c as create_ssr_component, v as validate_component, k as spread, m as escape_object } from "./ssr.js";
-import { c as checkCloudinaryCloudName } from "./CldImage.js";
-import { a as public_env } from "./shared-server.js";
+import { c as checkCloudinaryCloudName } from "./getCldImageUrl.js";
 var define_import_meta_env_default = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "da6xasun0", VITE_PUBLIC_CLOUDINARY_API_KEY: "528393748178165", BASE_URL: "/", MODE: "production", DEV: false, PROD: true, SSR: true };
 const CldUploadWidget = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   const { uploadPreset, signatureEndpoint, onError, onUpload, options, onOpen, onClose } = $$props;
@@ -23,13 +22,12 @@ const CldUploadWidget = create_ssr_component(($$result, $$props, $$bindings, slo
     tags: "onTags",
     "upload-added": "onUploadAdded"
   };
-  const cloudName = public_env.PUBLIC_CLOUDINARY_CLOUD_NAME || "da6xasun0";
-  checkCloudinaryCloudName(cloudName);
+  checkCloudinaryCloudName("da6xasun0");
   let isLoading = true;
   const uploadOptions = {
-    cloudName,
-    uploadPreset: uploadPreset || public_env.PUBLIC_CLOUDINARY_UPLOAD_PRESET || define_import_meta_env_default.PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-    apiKey: public_env.PUBLIC_CLOUDINARY_API_KEY || "528393748178165",
+    cloudName: "da6xasun0",
+    uploadPreset: uploadPreset || define_import_meta_env_default.PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+    apiKey: "528393748178165",
     ...options
   };
   if (signed) {

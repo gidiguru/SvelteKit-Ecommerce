@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../../../chunks/auth.js";
-import { d as db, b as productToProductTag, p as productTag } from "../../../../../../chunks/index2.js";
-import { e as error } from "../../../../../../chunks/index.js";
+import { d as db, b as productToProductTag, p as productTag } from "../../../../../../chunks/index.js";
+import { e as error } from "../../../../../../chunks/index2.js";
 import { eq, and, like } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 const load = async ({ locals, params }) => {

@@ -1,11 +1,12 @@
 import { c as create_ssr_component, v as validate_component, o as each, a as add_attribute } from "../../../../../../chunks/ssr.js";
 import { C as CldImage } from "../../../../../../chunks/CldImage.js";
-import { a as public_env } from "../../../../../../chunks/shared-server.js";
+import "../../../../../../chunks/getCldImageUrl.js";
 import { C as CldUploadButton } from "../../../../../../chunks/CldUploadButton.js";
 import { i as invalidateAll } from "../../../../../../chunks/client.js";
 import { d as deserialize } from "../../../../../../chunks/forms.js";
 import { R as Root, T as Trigger, D as Dropdown_menu_content, G as Group, a as Dropdown_menu_label, b as Dropdown_menu_separator, c as Dropdown_menu_item } from "../../../../../../chunks/index7.js";
 import { B as Button } from "../../../../../../chunks/index3.js";
+import dotenv__default from "dotenv";
 import { I as Icon } from "../../../../../../chunks/Icon.js";
 import { T as Trash } from "../../../../../../chunks/trash.js";
 const Crown = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -67,6 +68,7 @@ const Toggle_right = create_ssr_component(($$result, $$props, $$bindings, slots)
 const ToggleRight = Toggle_right;
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { data } = $$props;
+  dotenv__default.config();
   async function handleSubmit(info) {
     const { public_id, width, height } = info;
     const formData = new FormData();
@@ -184,7 +186,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   })}</div> <div class="w-full flex flex-row justify-end">${validate_component(CldUploadButton, "CldUploadButton").$$render(
     $$result,
     {
-      uploadPreset: public_env.PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+      uploadPreset: process.env.PUBLIC_CLOUDINARY_UPLOAD_PRESET,
       signatureEndpoint: "/api/cloudinary",
       class: "px-4 py-2 rounded-lg border-gray-900 bg-white text-gray-900 border font-semibold hover:bg-gray-200",
       onUpload: (res) => {

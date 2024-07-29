@@ -1,4 +1,4 @@
-import { d as db, c as productImage } from "../../chunks/index2.js";
+import { d as db, c as productImage } from "../../chunks/index.js";
 import { desc } from "drizzle-orm";
 const load = async () => {
   const collections = await db.query.productTag.findMany({

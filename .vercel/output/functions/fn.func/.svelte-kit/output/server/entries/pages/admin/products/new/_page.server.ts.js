@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../../chunks/auth.js";
-import { d as db, a as product } from "../../../../../chunks/index2.js";
-import { e as error, r as redirect } from "../../../../../chunks/index.js";
+import { d as db, a as product } from "../../../../../chunks/index.js";
+import { e as error, r as redirect } from "../../../../../chunks/index2.js";
 import { generateId } from "lucia";
 import { zfd } from "zod-form-data";
 const actions = {

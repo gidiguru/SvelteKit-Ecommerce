@@ -1,5 +1,6 @@
 import { c as create_ssr_component, v as validate_component } from "../../../chunks/ssr.js";
 import { C as CldImage } from "../../../chunks/CldImage.js";
+import "../../../chunks/getCldImageUrl.js";
 const Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   return `<div class="grow flex md:flex-row px-8 flex-col"><div class="p-12 grow flex items-center justify-center"><div class="lg:w-[800px] lg:h-[800px] rounded-xl overflow-hidden shadow-lg md:w-[300px] md:h-[300px] w-full h-auto"> ${validate_component(CldImage, "CldImage").$$render(
     $$result,

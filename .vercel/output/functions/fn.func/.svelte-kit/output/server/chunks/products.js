@@ -1,4 +1,4 @@
-import { d as db, c as productImage, f as productSize, g as productReview, b as productToProductTag, a as product } from "./index2.js";
+import { d as db, c as productImage, f as productSize, g as productReview, b as productToProductTag, a as product } from "./index.js";
 import { eq, desc } from "drizzle-orm";
 const deleteOneProduct = async (id) => {
   await db.delete(productImage).where(eq(productImage.productId, id));

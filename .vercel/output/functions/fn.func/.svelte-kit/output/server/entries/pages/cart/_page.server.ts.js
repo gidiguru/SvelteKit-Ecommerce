@@ -1,10 +1,10 @@
 import { s as stripe } from "../../../chunks/stripe.js";
-import { r as redirect, e as error } from "../../../chunks/index.js";
+import { r as redirect, e as error } from "../../../chunks/index2.js";
 import { track } from "@vercel/analytics/server";
 const actions = {
-  default: async (event) => {
-    const body = await event.request.json();
-    const user = event.locals.user;
+  default: async ({ request, url, locals }) => {
+    const body = await request.json();
+    const user = locals.user;
     const customerId = user ? user.stripeCustomerId ?? void 0 : void 0;
     const total = body.reduce((prev, curr) => {
       return {
@@ -55,8 +55,8 @@ const actions = {
         userId: user ? user.id : ""
       },
       mode: "payment",
-      success_url: `${event.url.origin}/status/checkout/success`,
-      cancel_url: `${event.url.origin}/status/checkout/fail`,
+      success_url: `${url.origin}/status/checkout/success`,
+      cancel_url: `${url.origin}/status/checkout/fail`,
       automatic_tax: { enabled: true },
       billing_address_collection: "required"
     });

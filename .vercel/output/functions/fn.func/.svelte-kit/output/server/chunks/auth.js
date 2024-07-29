@@ -1,11 +1,13 @@
+import dotenv__default from "dotenv";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { r as redirect } from "./index.js";
+import { r as redirect } from "./index2.js";
 import { GitHub } from "arctic";
 import { Lucia } from "lucia";
-import { d as db, s as session, u as user } from "./index2.js";
-const GITHUB_CLIENT_ID = "Ov23lilFaPerSCbbEQD6";
-const GITHUB_CLIENT_SECRET = "beba8afcb4779793d1349a48bbe2c205e8e7e1c5";
+import { d as db, s as session, u as user } from "./index.js";
+dotenv__default.config();
 const adapter = new DrizzlePostgreSQLAdapter(db, session, user);
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:5173";
 const lucia = new Lucia(adapter, {

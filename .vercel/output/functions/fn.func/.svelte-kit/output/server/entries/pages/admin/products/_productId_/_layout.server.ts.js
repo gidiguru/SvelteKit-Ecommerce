@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../../chunks/auth.js";
-import { d as db, a as product } from "../../../../../chunks/index2.js";
-import { e as error } from "../../../../../chunks/index.js";
+import { d as db, a as product } from "../../../../../chunks/index.js";
+import { e as error } from "../../../../../chunks/index2.js";
 import { eq } from "drizzle-orm";
 const load = async ({ locals, params }) => {
   ensureAdmin(locals);

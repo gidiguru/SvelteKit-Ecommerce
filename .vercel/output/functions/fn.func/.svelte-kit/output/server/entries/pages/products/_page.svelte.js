@@ -1,8 +1,9 @@
 import { c as create_ssr_component, j as compute_rest_props, s as subscribe, k as spread, m as escape_object, v as validate_component, a as add_attribute, e as escape, o as each, p as null_to_empty } from "../../../chunks/ssr.js";
-import { d as deserialize } from "../../../chunks/forms.js";
-import { C as CldImage } from "../../../chunks/CldImage.js";
-import { B as Button } from "../../../chunks/index3.js";
+import "devalue";
 import { g as goto } from "../../../chunks/client.js";
+import { C as CldImage } from "../../../chunks/CldImage.js";
+import "../../../chunks/getCldImageUrl.js";
+import { B as Button } from "../../../chunks/index3.js";
 import "../../../chunks/cart.js";
 import "../../../chunks/index5.js";
 import { D as Drawer, T as Trigger, a as Drawer_content, b as Drawer_header, c as Drawer_title, d as Drawer_description, e as Drawer_footer, C as Close } from "../../../chunks/index8.js";
@@ -272,38 +273,16 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $page, $$unsubscribe_page;
   $$unsubscribe_page = subscribe(page, (value) => $page = value);
   let { data } = $$props;
-  let debounceTimer;
-  let searchQuery = "";
   let displayMode = "sm";
-  function handleInputChange(query) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(
-      () => {
-        handleSearch(query);
-      },
-      400
-    );
-  }
   function addParam(param) {
     const curParams = $page.url.searchParams.getAll("tag");
-    searchQuery = "";
     if (!curParams.includes(param)) {
       $page.url.searchParams.append("tag", param);
       goto(`?${$page.url.searchParams.toString()}`, { invalidateAll: true });
     }
   }
-  async function handleSearch(query) {
-    const formData = new FormData();
-    formData.append("query", query);
-    const response = await fetch(`/products`, { method: "POST", body: formData });
-    const result = deserialize(await response.text());
-    if (result.type === "success") {
-      result.data;
-    }
-  }
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
-  searchQuery !== "" && handleInputChange(searchQuery);
   selected = $page.state.selected;
   $$unsubscribe_page();
   return ` ${selected ? `<button class="w-screen h-screen flex justify-center absolute top-0 left-0 z-40 bg-black bg-opacity-30"><div class="w-3/5 mt-24 rounded-t-lg overflow-hidden z-50">${validate_component(Page$1, "ProductPage").$$render($$result, { data: selected }, {}, {})}</div></button>` : ``} <main class="w-full sm:p-6 flex flex-col sm:gap-4"><div class="flex flex-row w-full sm:hidden gap-2 pt-6 px-2 justify-center">${validate_component(Root, "Tabs").$$render($$result, { class: "w-full pb-0" }, {}, {

@@ -1,6 +1,6 @@
 import { g as github, l as lucia } from "../../../../../chunks/auth.js";
 import { OAuth2RequestError } from "arctic";
-import { d as db, u as user } from "../../../../../chunks/index2.js";
+import { d as db, u as user } from "../../../../../chunks/index.js";
 import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 async function GET(event) {

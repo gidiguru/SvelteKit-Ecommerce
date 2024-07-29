@@ -1,6 +1,6 @@
 import { g as github } from "../../../../../chunks/auth.js";
 import { generateState } from "arctic";
-import { r as redirect } from "../../../../../chunks/index.js";
+import { r as redirect } from "../../../../../chunks/index2.js";
 async function GET(event) {
   const state = generateState();
   const url = await github.createAuthorizationURL(state, {

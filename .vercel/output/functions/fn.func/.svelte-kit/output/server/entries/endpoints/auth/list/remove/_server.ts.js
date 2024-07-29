@@ -1,5 +1,5 @@
-import { d as db, e as emailList } from "../../../../../chunks/index2.js";
-import { e as error, r as redirect } from "../../../../../chunks/index.js";
+import { d as db, e as emailList } from "../../../../../chunks/index.js";
+import { e as error, r as redirect } from "../../../../../chunks/index2.js";
 import { and, eq } from "drizzle-orm";
 const GET = async ({ url }) => {
   const key = url.searchParams.get("key");

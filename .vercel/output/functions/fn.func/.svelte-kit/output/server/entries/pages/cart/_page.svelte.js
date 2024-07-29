@@ -3,6 +3,7 @@ import { g as getCart } from "../../../chunks/cart.js";
 import "devalue";
 import "../../../chunks/client.js";
 import { C as CldImage } from "../../../chunks/CldImage.js";
+import "../../../chunks/getCldImageUrl.js";
 import { B as Button } from "../../../chunks/index3.js";
 import "dequal";
 import { i as getCtx, j as getAttrs, a as cn, n as flyAndScale } from "../../../chunks/utils.js";

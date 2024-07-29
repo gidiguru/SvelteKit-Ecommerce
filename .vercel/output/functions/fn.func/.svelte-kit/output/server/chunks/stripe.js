@@ -1,6 +1,7 @@
-import { p as private_env } from "./shared-server.js";
 import Stripe from "stripe";
-const stripe = new Stripe(private_env.STRIPE_SECRET_KEY);
+import dotenv__default from "dotenv";
+dotenv__default.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export {
   stripe as s
 };

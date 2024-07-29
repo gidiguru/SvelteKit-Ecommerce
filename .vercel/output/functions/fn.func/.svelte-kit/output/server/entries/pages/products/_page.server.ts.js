@@ -1,5 +1,5 @@
-import { d as db, b as productToProductTag, c as productImage, p as productTag } from "../../../chunks/index2.js";
-import { e as error } from "../../../chunks/index.js";
+import { d as db, b as productToProductTag, c as productImage, p as productTag } from "../../../chunks/index.js";
+import { e as error } from "../../../chunks/index2.js";
 import { inArray, desc, like } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 const load = async ({ url }) => {

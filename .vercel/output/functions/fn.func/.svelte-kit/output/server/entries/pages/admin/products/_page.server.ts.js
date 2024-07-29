@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../chunks/auth.js";
 import { f as fetchAllProducts } from "../../../../chunks/products.js";
-import { d as db, f as productSize, a as product } from "../../../../chunks/index2.js";
+import { d as db, f as productSize, a as product } from "../../../../chunks/index.js";
 import { parse } from "csv-parse";
 import { generateId } from "lucia";
 const load = async ({ locals }) => {

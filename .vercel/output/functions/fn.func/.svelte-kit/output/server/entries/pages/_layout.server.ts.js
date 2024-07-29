@@ -1,4 +1,4 @@
-import { d as db, o as order, p as productTag, a as product, b as productToProductTag } from "../../chunks/index2.js";
+import { d as db, o as order, p as productTag, a as product, b as productToProductTag } from "../../chunks/index.js";
 import { eq } from "drizzle-orm";
 const load = async ({ locals }) => {
   const orders = await db.select({

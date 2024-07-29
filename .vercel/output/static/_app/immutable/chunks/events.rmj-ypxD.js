@@ -1,1 +1,0 @@
-import{H as a}from"./scheduler.I4M8gLU-.js";function i(){const n=a();return t=>{const{originalEvent:e}=t.detail,{cancelable:r}=t,c=e.type;n(c,{originalEvent:e,currentTarget:e.currentTarget},{cancelable:r})||t.preventDefault()}}export{i as c};
