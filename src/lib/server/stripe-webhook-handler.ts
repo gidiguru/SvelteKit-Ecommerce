@@ -1,47 +1,61 @@
 import type Stripe from 'stripe';
+import { stripe } from '$lib/server/stripe';
 import { createNewOrder, createNewOrderProduct } from '$lib/server/data/orders';
 import { db } from '$lib/server/db/index';
 import { user } from '$lib/server/db/schema';
 import { sendPurchaseThankYou } from '$lib/emails/purchase-thank-you';
 import { eq } from 'drizzle-orm';
 
-export async function handleStripeWebhook(event: Stripe.Event): Promise<{ received: boolean }> {
-    const eventType = event.type;
-    console.log(`Event type: ${eventType}`);
+export async function handleStripeWebhook(
+    event: Stripe.Event, 
+    signature?: string, 
+    rawBody?: string
+): Promise<{ received: boolean }> {
+    console.log(`Received webhook: ${event.id}, Type: ${event.type}`);
 
     // Always send test email
     try {
-        await sendPurchaseThankYou('tomijoguno@gmail.com', 'Jogun Ogedengbe');
-        console.log('Test email sent successfully');
+        await sendPurchaseThankYou('test@example.com', 'Test Customer');
     } catch (error) {
         console.error('Error sending test email:', error);
     }
 
-    if (eventType === 'checkout.session.completed') {
+    // Only verify signature if all required parameters are provided
+    if (signature && rawBody) {
         try {
-            await handleCheckoutSessionCompleted(event);
-        } catch (error) {
-            console.error('Error handling checkout session completed:', error);
-            // We log the error but don't re-throw it to ensure the webhook always returns success
+            const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+            if (!endpointSecret) {
+                throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+            }
+            stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
+        } catch (err) {
+            console.error('⚠️  Webhook signature verification failed:', err);
+            return { received: false };
         }
-    } else {
-        console.log(`Unhandled event type: ${eventType}`);
+    }
+
+    try {
+        if (event.type === 'checkout.session.completed') {
+            await handleCheckoutSessionCompleted(event);
+        } else {
+            console.log(`Unhandled event type: ${event.type}`);
+        }
+    } catch (error) {
+        console.error('Error handling event:', error);
     }
 
     return { received: true };
 }
 
 async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void> {
-    console.log('Checkout session completed event received');
+    console.log('Processing checkout.session.completed event');
     const session = event.data.object as Stripe.Checkout.Session;
-    console.log('Session retrieved:', JSON.stringify(session, null, 2));
 
     if (!session.metadata) {
-        console.log('No session metadata found');
+        console.warn('No session metadata found');
         return;
     }
 
-    console.log('Session metadata found');
     let codes: { quantity: number; code: string }[];
     try {
         codes = JSON.parse(session.metadata.codes);
@@ -53,18 +67,14 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
     const customer = session.customer as Stripe.Customer | string | null;
     const customerId = typeof customer === 'object' ? customer?.id : customer;
 
-    if (customerId) {
-        console.log('Customer found:', customerId);
-        const userId = session.metadata.userId as string;
-        if (userId) {
-            try {
-                await db.update(user)
-                    .set({ stripeCustomerId: customerId })
-                    .where(eq(user.id, userId));
-                console.log('User updated with Stripe customer ID');
-            } catch (error) {
-                console.error('Error updating user with Stripe customer ID:', error);
-            }
+    if (customerId && session.metadata.userId) {
+        try {
+            await db.update(user)
+                .set({ stripeCustomerId: customerId })
+                .where(eq(user.id, session.metadata.userId));
+            console.log('User updated with Stripe customer ID');
+        } catch (error) {
+            console.error('Error updating user with Stripe customer ID:', error);
         }
     }
 
@@ -74,7 +84,6 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
             customerId: customerId ?? null,
             totalPrice: session.amount_total ?? 0
         });
-        console.log('New order created');
 
         for (const code of codes) {
             await createNewOrderProduct({
@@ -84,14 +93,12 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
                 orderId: session.id
             });
         }
-        console.log('Order products created');
+        console.log('Order and order products created successfully');
     } catch (error) {
         console.error('Error creating order or order products:', error);
-        // We don't re-throw this error to ensure the webhook continues processing
     }
 
     if (session.customer_details?.email) {
-        console.log('Customer email found:', session.customer_details.email);
         const customerName = session.customer_details.name || 'Valued Customer';
         try {
             await sendPurchaseThankYou(
@@ -101,9 +108,8 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
             console.log(`Purchase thank you email sent to ${session.customer_details.email}`);
         } catch (emailError) {
             console.error('Error sending purchase thank you email:', emailError);
-            // We log the error but don't re-throw it
         }
     } else {
-        console.log('No customer email available for sending purchase thank you');
+        console.warn('No customer email available for sending purchase thank you');
     }
 }
