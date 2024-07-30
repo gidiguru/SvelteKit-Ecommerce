@@ -30,13 +30,10 @@ export async function GET(event: RequestEvent): Promise<Response> {
 			where: and(eq(user.provider, 'github'), eq(user.providerId, githubUser.id))
 		});
 
+		let userId: string;
+
 		if (existingUser) {
-			const session = await lucia.createSession(existingUser.id, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
-			event.cookies.set(sessionCookie.name, sessionCookie.value, {
-				path: '.',
-				...sessionCookie.attributes
-			});
+			userId = existingUser.id;
 		} else {
 			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
@@ -44,31 +41,42 @@ export async function GET(event: RequestEvent): Promise<Response> {
 				}
 			});
 
-			const githubEmail: GitHubEmail[] = await githubEmailResponse.json();
+			const githubEmails: GitHubEmail[] = await githubEmailResponse.json();
 
-			// get the primary email
-			const primary = githubEmail.find((entry) => entry.primary);
-			// TODO: clean this up...
-			if (primary) {
-				const nameParts = githubUser.name.split(' ');
-				const userId = generateId(40);
-				await db.insert(user).values({
-					id: userId,
-					provider: 'github',
-					providerId: githubUser.id,
-					email: primary.email,
-					firstName: nameParts[0] ?? '',
-					lastName: nameParts[1] ?? '',
-					isAdmin: false
-				});
-				const session = await lucia.createSession(userId, {});
-				const sessionCookie = lucia.createSessionCookie(session.id);
-				event.cookies.set(sessionCookie.name, sessionCookie.value, {
-					path: '.',
-					...sessionCookie.attributes
-				});
+			const primaryEmail = githubEmails.find((entry) => entry.primary);
+			if (!primaryEmail) {
+				return new Response('No primary email found', { status: 400 });
 			}
+
+			// Handle cases where name might be null
+			let firstName = '';
+			let lastName = '';
+			if (githubUser.name) {
+				const nameParts = githubUser.name.split(' ');
+				firstName = nameParts[0] ?? '';
+				lastName = nameParts.slice(1).join(' ') ?? '';
+			}
+
+			userId = generateId(40);
+			await db.insert(user).values({
+				id: userId,
+				provider: 'github',
+				providerId: githubUser.id,
+				email: primaryEmail.email,
+				firstName,
+				lastName,
+				isAdmin: false,
+				stripeCustomerId: null
+			});
 		}
+
+		const session = await lucia.createSession(userId, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+		event.cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
+		});
+
 		return new Response(null, {
 			status: 302,
 			headers: {
@@ -76,13 +84,13 @@ export async function GET(event: RequestEvent): Promise<Response> {
 			}
 		});
 	} catch (e) {
-		// the specific error message depends on the provider
 		if (e instanceof OAuth2RequestError) {
 			// invalid code
 			return new Response(null, {
 				status: 400
 			});
 		}
+		console.error('Unexpected error during GitHub OAuth:', e);
 		return new Response(null, {
 			status: 500
 		});
@@ -93,8 +101,7 @@ type GitHubUser = {
 	id: string;
 	login: string;
 	avatar_url: string;
-	// THERE IS A LOT MORE HERE, I JUST TOOK WHAT I WANTED
-	name: string;
+	name: string | null;
 };
 
 type GitHubEmail = {
