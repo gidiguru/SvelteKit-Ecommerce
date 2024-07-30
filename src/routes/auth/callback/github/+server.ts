@@ -6,6 +6,9 @@ import { user } from '$lib/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
+// Import the specific types from your schema
+//import type { NewUser } from '$lib/server/db/schema';
+
 export async function GET(event: RequestEvent): Promise<Response> {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
@@ -26,6 +29,8 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		});
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
+		console.log('GitHub User Data:', JSON.stringify(githubUser, null, 2));
+
 		const existingUser = await db.query.user.findFirst({
 			where: and(eq(user.provider, 'github'), eq(user.providerId, githubUser.id))
 		});
@@ -34,6 +39,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 		if (existingUser) {
 			userId = existingUser.id;
+			console.log('Existing user found:', existingUser);
 		} else {
 			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
@@ -42,32 +48,37 @@ export async function GET(event: RequestEvent): Promise<Response> {
 			});
 
 			const githubEmails: GitHubEmail[] = await githubEmailResponse.json();
+			console.log('GitHub Emails:', JSON.stringify(githubEmails, null, 2));
 
 			const primaryEmail = githubEmails.find((entry) => entry.primary);
 			if (!primaryEmail) {
+				console.error('No primary email found');
 				return new Response('No primary email found', { status: 400 });
 			}
 
-			// Handle cases where name might be null
-			let firstName = '';
-			let lastName = '';
-			if (githubUser.name) {
-				const nameParts = githubUser.name.split(' ');
-				firstName = nameParts[0] ?? '';
-				lastName = nameParts.slice(1).join(' ') ?? '';
-			}
+			let firstName = (githubUser.name ? githubUser.name.split(' ')[0] : githubUser.login).substring(0, 100);
+			let lastName = (githubUser.name ? githubUser.name.split(' ').slice(1).join(' ') : '').substring(0, 100);
 
 			userId = generateId(40);
-			await db.insert(user).values({
+			const newUser: NewUser = {
 				id: userId,
 				provider: 'github',
-				providerId: githubUser.id,
-				email: primaryEmail.email,
+				providerId: githubUser.id.substring(0, 255),
+				email: primaryEmail.email.substring(0, 100),
 				firstName,
 				lastName,
 				isAdmin: false,
 				stripeCustomerId: null
-			});
+			};
+			console.log('Attempting to insert new user:', JSON.stringify(newUser, null, 2));
+
+			try {
+				await db.insert(user).values(newUser);
+				console.log('New user inserted successfully');
+			} catch (dbError) {
+				console.error('Error inserting new user:', dbError);
+				return new Response('Error creating user', { status: 500 });
+			}
 		}
 
 		const session = await lucia.createSession(userId, {});
@@ -85,7 +96,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		});
 	} catch (e) {
 		if (e instanceof OAuth2RequestError) {
-			// invalid code
+			console.error('OAuth2RequestError:', e);
 			return new Response(null, {
 				status: 400
 			});

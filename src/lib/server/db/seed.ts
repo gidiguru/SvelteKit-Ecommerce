@@ -4,7 +4,8 @@ import {
     productImage,
     productSize,
     productTag,
-    productToProductTag
+    productToProductTag,
+    user
 } from './schema';
 
 //import {db} from './index';
@@ -141,19 +142,54 @@ const seed = async () => {
     console.log(`INSERTED ${insertedTagsToProducts.length} product tag relations`);
 
     console.log("...completed seeding")
+
 };
 
-const drop = async () => {
-    await db.delete(product)
-    await db.delete(productSize)
-    await db.delete(productImage)
-    await db.delete(productTag)
-    await db.delete(productToProductTag)
-    console.log("deleted everything")
-}
 
-seed()
+const insertUser = async () => {
+    const users = [
+        {
+            id: "8p43k3vnymmfn13kwepxpgfk5hdjvdr5t1ijks8l",
+            provider: "github",
+            providerId: "81527773",
+            firstName: "Tomijogun",
+            lastName: "Ogedengbe",
+            isAdmin: true,
+            email: "gidiguru@gmail.com",
+            stripeCustomerId: "81527773",
+        }
+    ];
 
+    try {
+        const insertedUsers = await db.insert(user).values(users);
+        console.log('Users inserted successfully:', insertedUsers);
+        return insertedUsers;
+    } catch (error) {
+        console.error('Error inserting users:', error);
+        throw error;
+    }
+};
+
+
+
+//const drop = async () => {
+//    await db.delete(product)
+//    await db.delete(productSize)
+//    await db.delete(productImage)
+//    await db.delete(productTag)
+//    await db.delete(productToProductTag)
+//    console.log("deleted everything")
+//}
+
+
+//const deleteUser = async () => {
+//    await db.delete(user)
+//    console.log("deleted user")
+//}
+
+//seed()
 //drop()
+insertUser()
+//deleteUser();
 
 

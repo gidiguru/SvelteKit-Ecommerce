@@ -12,12 +12,12 @@ import {
 	
 } from 'drizzle-orm/pg-core';
 
-export const provider = pgEnum('provider', ['google', 'github']);
+export const provider = varchar('provider', {enum: ['google', 'github']});
 export const user = pgTable(
 	'user',
 	{
 		id: varchar('id', { length: 100 }).unique().notNull(),
-		provider: provider('provider').notNull(),
+		provider: varchar('provider').notNull(),
 		providerId: varchar('provider_id', { length: 255 }).notNull(),
 		firstName: varchar('first_name', { length: 100 }).notNull(),
 		lastName: varchar('last_name', { length: 100 }).notNull(),
@@ -31,6 +31,8 @@ export const user = pgTable(
 		};
 	}
 );
+
+export type NewUser = typeof user.$inferInsert;
 
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session)
