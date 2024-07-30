@@ -1,103 +1,87 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+//import { env } from '$env/dynamic/private';
+import { createNewOrder, createNewOrderProduct } from '$lib/server/data/orders';
+import { db } from '$lib/server/db/index';
+import { user } from '$lib/server/db/schema';
+import { sendPurchaseThankYou } from '$lib/emails/purchase-thank-you';
 import { stripe } from '$lib/server/stripe';
-import type { Stripe } from 'stripe';
+import { error, json } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
+import type Stripe from 'stripe';
+import dotenv from 'dotenv';
 
-// Mock external dependencies
-vi.mock('$lib/server/stripe', () => ({
-  stripe: {
-    webhooks: {
-      constructEvent: vi.fn(),
-    },
-  },
-}));
+dotenv.config()
 
-// Mock the stripe-webhook-handler module
-vi.mock('$lib/server/stripe-webhook-handler', () => ({
-  stripeWebhookHandler: {
-    handleStripeWebhook: vi.fn(),
-  },
-}));
 
-// Import the mocked module
-import { stripeWebhookHandler } from '$lib/server/stripe-webhook-handler';
-
-// Mock the core logic of your webhook handler
-async function mockWebhookHandler(request: Request, secret: string | undefined) {
-  if (!secret) {
-    return {
-      status: 500,
-      body: JSON.stringify({ message: 'Missing Stripe webhook secret' }),
-    };
-  }
-
-  const signature = request.headers.get('stripe-signature');
-  if (!signature) {
-    return {
-      status: 400,
-      body: JSON.stringify({ message: 'Missing stripe-signature header' }),
-    };
-  }
-
-  try {
-    const body = await request.text();
-    const event = stripe.webhooks.constructEvent(body, signature, secret) as Stripe.Event;
-    const result = await stripeWebhookHandler.handleStripeWebhook(event);
-    return {
-      status: 200,
-      body: JSON.stringify(result),
-    };
-  } catch (err) {
-    console.error('Error processing webhook:', err);
-    return {
-      status: 400,
-      body: JSON.stringify({ message: 'Webhook Error' }),
-    };
-  }
+function toBuffer(ab: ArrayBuffer): Buffer {
+	const buf = Buffer.alloc(ab.byteLength);
+	const view = new Uint8Array(ab);
+	for (let i = 0; i < buf.length; i++) {
+		buf[i] = view[i];
+	}
+	return buf;
 }
 
-describe('Stripe Webhook Handler', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    process.env.STRIPE_WEBHOOK_SECRET = 'test_secret';
-  });
+export const POST = async ({ request }: { request: any }) => {
+	const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
-  it('should handle valid webhook', async () => {
-    const mockEvent = { type: 'payment_intent.succeeded', data: {} } as Stripe.Event;
-    vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(mockEvent);
-    vi.mocked(stripeWebhookHandler.handleStripeWebhook).mockResolvedValue({ received: true });
+	const _rawBody = await request.arrayBuffer();
+	const payload = toBuffer(_rawBody);
 
-    const request = new Request('http://localhost/api/stripe', {
-      method: 'POST',
-      headers: { 'stripe-signature': 'valid_signature' },
-      body: JSON.stringify({ some: 'data' }),
-    });
+	// Get the signature sent by Stripe
+	const signature = request.headers.get('stripe-signature') ?? '';
+	try {
+		const event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+		const eventType = event.type;
 
-    const response = await mockWebhookHandler(request, 'test_secret');
+		if (eventType === 'checkout.session.completed') {
+			const sessionWithCustomer = await stripe.checkout.sessions.retrieve(event.data.object.id, {
+				expand: ['customer']
+			});
 
-    expect(response.status).toBe(200);
-    expect(JSON.parse(response.body)).toEqual({ received: true });
-    expect(stripe.webhooks.constructEvent).toHaveBeenCalled();
-    expect(stripeWebhookHandler.handleStripeWebhook).toHaveBeenCalledWith(mockEvent);
-  });
+			if (sessionWithCustomer.metadata) {
+				const codes = JSON.parse(sessionWithCustomer.metadata.codes) as {
+					quantity: number;
+					code: string;
+				}[];
 
-  // ... other tests remain the same ...
+				const customer = sessionWithCustomer.customer as Stripe.Customer | null;
+				if (customer) {
+					// add customer to user
+					const userId = sessionWithCustomer.metadata.userId as string;
+					if (userId !== '') {
+						await db
+							.update(user)
+							.set({
+								stripeCustomerId: customer.id
+							})
+							.where(eq(user.id, userId));
+					}
+				}
 
-  it('should handle webhook error', async () => {
-    vi.mocked(stripe.webhooks.constructEvent).mockImplementation(() => {
-      throw new Error('Invalid signature');
-    });
+				await createNewOrder({
+					orderId: sessionWithCustomer.id,
+					customerId: customer?.id ?? null,
+					totalPrice: sessionWithCustomer.amount_total ?? 0
+				});
 
-    const request = new Request('http://localhost/api/stripe', {
-      method: 'POST',
-      headers: { 'stripe-signature': 'invalid_signature' },
-      body: JSON.stringify({ some: 'data' }),
-    });
+				for (let i = 0; i < codes.length; i++) {
+					await createNewOrderProduct({
+						productSizeCode: codes[i].code,
+						quantity: codes[i].quantity,
+						status: 'placed',
+						orderId: sessionWithCustomer.id
+					});
+				}
 
-    const response = await mockWebhookHandler(request, 'test_secret');
+				if (sessionWithCustomer.customer_details?.email) {
+					await sendPurchaseThankYou(sessionWithCustomer.customer_details.email, sessionWithCustomer.customer_details.email);
+				}
+			}
+		}
+	} catch (err) {
+		console.log(`⚠️  Webhook signature verification failed.`, err);
+		error(500);
+	}
 
-    expect(response.status).toBe(400);
-    expect(JSON.parse(response.body)).toEqual({ message: 'Webhook Error' });
-    expect(stripe.webhooks.constructEvent).toHaveBeenCalled();
-    expect(stripeWebhookHandler.handleStripeWebhook).not.toHaveBeenCalled();
-  });
-});
+	return json({ success: true });
+};
