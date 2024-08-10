@@ -43,7 +43,7 @@
 		>
 			<!-- CLD IMAGE SWITCH NEEDED -->
 			<CldImage
-				src={'products/Ugreen_PowerRoam_1200W'}
+				src={'cld-sample-2'}
 				width={1920}
 				height={900}
 				objectFit="cover"
@@ -56,7 +56,7 @@
 		>
 			<!-- CLD IMAGE SWITCH NEEDED -->
 			<CldImage
-				src={'products/Ugreen_PowerRoam_1200W'}
+				src={'cld-sample-2'}
 				width={700}
 				height={1000}
 				objectFit="cover"

@@ -32,7 +32,7 @@
 			<div class="md:w-1/2">
 				<!-- CLD IMAGE SWITCH NEEDED -->
 				<CldImage
-					src="products/Ugreen_PowerRoam_1200W"
+					src="cld-sample-2"
 					width={1000}
 					height={1000}
 					objectFit="cover"
