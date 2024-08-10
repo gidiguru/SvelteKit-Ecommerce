@@ -9,7 +9,7 @@
 		>
 			<!-- CLD IMAGE SWITCH NEEDED -->
 			<CldImage
-				src="txvp48xxnytjd024vnye"
+				src="products/Ugreen_PowerRoam_1200W"
 				width={1600}
 				height={1600}
 				alt="decoration image"

@@ -1,88 +1,116 @@
 import type { TCartEntry } from '$lib/client/cart.js';
-// Remove this line as we're not using clearCart directly here
-// import type { clearCart } from '$lib/client/cart.js';
 import { stripe } from '$lib/server/stripe';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import type { Actions } from './$types';
 import type Stripe from 'stripe';
 import { track } from '@vercel/analytics/server';
-import { sendPurchaseThankYou } from '$lib/emails/purchase-thank-you';
 
-export const actions = {
-    default: async ({request, url, locals}) => {
-        const body = (await request.json()) as TCartEntry[];
+export const actions: Actions = {
+    default: async ({ request, url, locals }) => {
+        console.log('Starting checkout process');
+        try {
+            const formData = await request.formData();
+            const cartJson = formData.get('cart');
+            
+            if (typeof cartJson !== 'string') {
+                console.log('Invalid cart data received');
+                return { success: false, message: 'Invalid cart data' };
+            }
 
-        const user = locals.user;
+            const body = JSON.parse(cartJson) as TCartEntry[];
+            console.log('Parsed cart data:', body);
 
-        const customerId = user ? user.stripeCustomerId ?? undefined : undefined;
+            if (body.length === 0) {
+                console.log('Cart is empty');
+                return { success: false, message: 'Cart is empty' };
+            }
 
-        // Calculate total price
-        const total = body.reduce((prev, curr) => {
-            return {
-                ...prev,
-                size: {
-                    ...prev.size,
-                    price: prev.size.price + curr.size.price * curr.quantity
-                }
-            };
-        }).size.price / 100;
+            const user = locals.user;
+            const customerId = user?.stripeCustomerId ?? undefined;
+            console.log('User info:', { user: !!user, customerId });
 
-        const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-            ...body.map((item) => {
-                return {
-                    price: item.size.stripePriceId,
-                    quantity: item.quantity
-                };
-            })
-        ];
+            // Calculate total price
+            const total = body.reduce((sum, item) => sum + (item.size.price * item.quantity) / 100, 0);
+            console.log('Calculated total:', total);
 
-        if (total < 125) {
-            // add shipping to total
-            line_items.push({
-                price_data: {
-                    currency: 'USD',
-                    product_data: {
-                        name: 'US Shipping'
+            const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = body.map((item) => ({
+                price: item.size.stripePriceId,
+                quantity: item.quantity
+            }));
+
+            if (total < 125) {
+                line_items.push({
+                    price_data: {
+                        currency: 'USD',
+                        product_data: {
+                            name: 'US Shipping'
+                        },
+                        unit_amount: 1500
                     },
-                    unit_amount: 1500
-                },
-                quantity: 1
-            });
+                    quantity: 1
+                });
+                console.log('Added shipping to line items');
+            }
+
+            console.log('Creating Stripe checkout session');
+            const sessionResult = await Promise.race([
+                stripe.checkout.sessions.create({
+                    shipping_address_collection: {
+                        allowed_countries: ['US']
+                    },
+                    line_items,
+                    customer: customerId,
+                    customer_creation: user && !customerId ? 'always' : undefined,
+                    customer_update: customerId
+                        ? {
+                            shipping: 'auto'
+                          }
+                        : undefined,
+                    metadata: {
+                        codes: JSON.stringify(
+                            body.map((item) => ({
+                                quantity: item.quantity,
+                                code: item.size.code
+                            }))
+                        ),
+                        userId: user?.id ?? ''
+                    },
+                    mode: 'payment',
+                    success_url: `${url.origin}/status/checkout/success?clear_cart=true`,
+                    cancel_url: `${url.origin}/status/checkout/fail`,
+                    automatic_tax: { enabled: true },
+                    billing_address_collection: 'required'
+                }),
+                new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Stripe API timeout')), 30000))
+            ]) as Stripe.Checkout.Session;
+
+            if (sessionResult.url) {
+                await track('StartedCheckout', { total });
+                console.log('Checkout session created, redirecting to:', sessionResult.url);
+                return { type: 'redirect', location: sessionResult.url };
+            }
+
+            console.log('Failed to create checkout session');
+            return { success: false, message: 'Failed to create checkout session' };
+        } catch (err: unknown) {
+            console.error('Checkout error:', err);
+            
+            if (err instanceof Error) {
+                if (err.message === 'Stripe API timeout') {
+                    return { success: false, message: 'The checkout process timed out. Please try again.' };
+                }
+                
+                // Check for ECONNRESET error
+                if ('code' in err && err.code === 'ECONNRESET') {
+                    return { success: false, message: 'The connection was reset. Please try again.' };
+                }
+                
+                // Log the error message for debugging
+                console.error('Error message:', err.message);
+            }
+            
+            // Generic error message for any other type of error
+            return { success: false, message: 'An error occurred during checkout. Please try again.' };
         }
-
-        const session = await stripe.checkout.sessions.create({
-            shipping_address_collection: {
-                allowed_countries: ['US']
-            },
-            line_items,
-            customer: customerId,
-            customer_creation: user && !customerId ? 'always' : undefined,
-            customer_update: customerId
-                ? {
-                    shipping: 'auto'
-                  }
-                : undefined,
-            metadata: {
-                codes: JSON.stringify(
-                    body.map((item) => ({
-                        quantity: item.quantity,
-                        code: item.size.code
-                    }))
-                ),
-                userId: user ? user.id : ''
-            },
-            mode: 'payment',
-            success_url: `${url.origin}/status/checkout/success?clear_cart=true`, // Added query parameter
-            cancel_url: `${url.origin}/status/checkout/fail`,
-            automatic_tax: { enabled: true },
-            billing_address_collection: 'required'
-        });
-
-        if (session.url) {
-            await track('StartedCheckout', { total });
-            redirect(307, session.url);
-        }
-
-        // TODO: make these errors not suck
-        error(500);
     }
 };

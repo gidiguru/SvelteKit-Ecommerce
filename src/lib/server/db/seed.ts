@@ -5,7 +5,8 @@ import {
     productSize,
     productTag,
     productToProductTag,
-    user
+    user,
+    session
 } from './schema';
 
 //import {db} from './index';
@@ -152,11 +153,21 @@ const insertUser = async () => {
             id: "8p43k3vnymmfn13kwepxpgfk5hdjvdr5t1ijks8l",
             provider: "github",
             providerId: "81527773",
-            firstName: "Tomijogun",
-            lastName: "Ogedengbe",
+            firstName: "Gidi",
+            lastName: "Guru",
             isAdmin: true,
             email: "gidiguru@gmail.com",
             stripeCustomerId: "81527773",
+        },
+        {
+            id: "aqjed8xffc659i3v86a2sxeyoxpz691h1ajzgxiu",
+            provider: "google",
+            providerId: "102255017505167407897",
+            firstName: "Jogun",
+            lastName: "Ogedengbe",
+            isAdmin: true,
+            email: "tomijoguno@gmail.com",
+            stripeCustomerId: "102255017505167407897",
         }
     ];
 
@@ -172,24 +183,30 @@ const insertUser = async () => {
 
 
 
-//const drop = async () => {
-//    await db.delete(product)
-//    await db.delete(productSize)
-//    await db.delete(productImage)
-//    await db.delete(productTag)
-//    await db.delete(productToProductTag)
-//    console.log("deleted everything")
-//}
+const drop = async () => {
+    await db.delete(product)
+    await db.delete(productSize)
+    await db.delete(productImage)
+    await db.delete(productTag)
+    await db.delete(productToProductTag)
+    console.log("deleted everything")
+}
 
 
-//const deleteUser = async () => {
-//    await db.delete(user)
-//    console.log("deleted user")
-//}
+const deleteUser = async () => {
+    await db.delete(user)
+    console.log("deleted user")
+}
+
+const deleteSession = async () => {
+    await db.delete(session)
+    console.log("deleted session")
+}
 
 //seed()
 //drop()
-insertUser()
-//deleteUser();
+//insertUser()
+deleteUser();
+//deleteSession();
 
 
