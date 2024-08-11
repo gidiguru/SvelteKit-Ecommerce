@@ -119,7 +119,7 @@
 				>
 			</a>
 		{:else}
-			<a href="/auth/login">
+			<a href="/auth/signin">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
@@ -180,7 +180,7 @@
 				>
 			</a>
 		{:else}
-			<a href="/auth/login">
+			<a href="/auth/signin">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"

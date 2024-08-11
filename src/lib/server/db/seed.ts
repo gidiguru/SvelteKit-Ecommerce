@@ -6,7 +6,8 @@ import {
     productTag,
     productToProductTag,
     user,
-    session
+    session,
+    emailList
 } from './schema';
 
 //import {db} from './index';
@@ -159,16 +160,7 @@ const insertUser = async () => {
             email: "gidiguru@gmail.com",
             stripeCustomerId: "81527773",
         },
-        {
-            id: "aqjed8xffc659i3v86a2sxeyoxpz691h1ajzgxiu",
-            provider: "google",
-            providerId: "102255017505167407897",
-            firstName: "Jogun",
-            lastName: "Ogedengbe",
-            isAdmin: true,
-            email: "tomijoguno@gmail.com",
-            stripeCustomerId: "102255017505167407897",
-        }
+
     ];
 
     try {
@@ -203,10 +195,16 @@ const deleteSession = async () => {
     console.log("deleted session")
 }
 
+const deleteEmailList = async () => {
+    await db.delete(emailList)
+    console.log("deleted email list")
+}
+
 //seed()
 //drop()
 //insertUser()
 deleteUser();
+deleteEmailList();
 //deleteSession();
 
 

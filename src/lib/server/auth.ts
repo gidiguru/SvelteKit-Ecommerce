@@ -59,7 +59,7 @@ declare module 'lucia' {
 
 export function ensureAdmin(locals: App.Locals) {
 	if (!locals.user || !locals.session) {
-		redirect(303, '/auth/login');
+		redirect(303, '/auth/signin');
 	}
 
 	if (!locals.user.isAdmin) {

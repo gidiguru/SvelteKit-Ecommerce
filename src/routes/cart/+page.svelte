@@ -156,7 +156,7 @@
 						</form>
 						<Button
 							type="button"
-							on:click={() => goto('/auth/login')}
+							on:click={() => goto('/auth/signin')}
 							class="w-full"
 							variant="outline">Create account</Button
 						>

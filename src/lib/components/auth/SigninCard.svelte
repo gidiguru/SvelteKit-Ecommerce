@@ -144,7 +144,15 @@
 				</div>
 			</div>
 
-			<Button variant="outline" type="button" disabled={isSubmitDisabled}>
+			<Button href="/auth/login/google" variant="outline" >
+				{#if isLoading}
+					<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
+				{:else}
+					<Icons.google class="mr-2 h-4 w-4" />
+				{/if}
+				Google
+			</Button>
+			<Button variant="outline" href="/auth/login/github" >
 				{#if isLoading}
 					<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 				{:else}
