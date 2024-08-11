@@ -19,6 +19,23 @@
 </script>
 
 <div class={cn("grid gap-6", className)} {...$$restProps}>
+	<Button variant="outline" type="button" disabled={isLoading}>
+		{#if isLoading}
+			<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
+		{:else}
+			<Icons.gitHub class="mr-2 h-4 w-4" />
+		{/if}
+		GitHub
+	</Button>
+	<Button variant="outline" type="button" disabled={isLoading}>
+		{#if isLoading}
+			<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
+		{:else}
+			<Icons.gitHub class="mr-2 h-4 w-4" />
+		{/if}
+		Google
+	</Button>
+	
 	<form on:submit|preventDefault={onSubmit}>
 		<div class="grid gap-2">
 			<div class="grid gap-1">
@@ -32,12 +49,22 @@
 					autocorrect="off"
 					disabled={isLoading}
 				/>
+				<Label class="sr-only" for="email">Email</Label>
+				<Input
+					id="password"
+					placeholder="password"
+					type="password"
+					autocapitalize="none"
+					autocomplete="password"
+					autocorrect="off"
+					disabled={isLoading}
+				/>
 			</div>
 			<Button type="submit" disabled={isLoading}>
 				{#if isLoading}
 					<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 				{/if}
-				Sign In with Email
+				Continue
 			</Button>
 		</div>
 	</form>
@@ -49,12 +76,6 @@
 			<span class="bg-background text-muted-foreground px-2"> Or continue with </span>
 		</div>
 	</div>
-	<Button variant="outline" type="button" disabled={isLoading}>
-		{#if isLoading}
-			<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
-		{:else}
-			<Icons.gitHub class="mr-2 h-4 w-4" />
-		{/if}
-		GitHub
-	</Button>
+	
+
 </div>

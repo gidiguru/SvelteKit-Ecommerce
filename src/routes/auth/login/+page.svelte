@@ -2,6 +2,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Github, Chrome, Star } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+
 </script>
 
 <Card.Root class="w-[400px]">
@@ -11,7 +12,7 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="flex flex-col justify-center items-center w-full gap-4">
-			<Button href="/auth/signup" class="w-full">
+			<Button href="/auth/signin" class="w-full">
 				<Star class="mr-2 h-4 w-4" />
 				Log In or Sign Up
 			</Button>

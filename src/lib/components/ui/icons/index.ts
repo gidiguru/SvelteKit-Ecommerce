@@ -26,7 +26,7 @@ import type { SvelteComponent } from "svelte";
 //import Apple from "./apple.svelte";
 //import Aria from "./aria.svelte";
 import GitHub from "./github.svelte";
-//import Google from "./google.svelte";
+import Google from "./google.svelte";
 //import Hamburger from "./hamburger.svelte";
 import Logo from "./logo.svelte";
 //import Npm from "./npm.svelte";
@@ -73,7 +73,7 @@ export const Icons = {
 	//yarn: Yarn,
 	//pnpm: Pnpm,
 	//tailwind: Tailwind,
-	//google: Google,
+	google: Google,
 	//apple: Apple,
 	//paypal: PayPal,
 	//Hamburger,

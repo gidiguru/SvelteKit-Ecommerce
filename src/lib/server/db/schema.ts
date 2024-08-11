@@ -12,7 +12,7 @@ import {
 	
 } from 'drizzle-orm/pg-core';
 
-export const provider = varchar('provider', {enum: ['google', 'github']});
+export const provider = varchar('provider', {enum: ['google', 'github', 'sgs']});
 export const user = pgTable(
 	'user',
 	{
@@ -23,7 +23,9 @@ export const user = pgTable(
 		lastName: varchar('last_name', { length: 100 }).notNull(),
 		isAdmin: boolean('is_admin').notNull(),
 		email: varchar('email', { length: 100 }).notNull().unique(),
-		stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique()
+		stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique(),
+		password: varchar('password', { length: 255 }), // New field for password
+		terms: boolean('terms')
 	},
 	(table) => {
 		return {
