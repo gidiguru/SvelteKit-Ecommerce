@@ -100,6 +100,6 @@ export const actions: Actions = {
         }
 
         // Redirect outside of the try-catch block
-        return redirect(303, '/auth/signin');
+        return redirect(303, '/auth/password/update-${token}/success');
     }
 };
