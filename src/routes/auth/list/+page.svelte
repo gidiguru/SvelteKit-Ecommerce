@@ -82,7 +82,7 @@
 <Card.Root class="w-[400px]">
 	<Card.Header>
 		<Card.Title>Email List</Card.Title>
-		<Card.Description>Get updates and deals from the sediment team</Card.Description>
+		<Card.Description>Get updates and deals from the Techshop team</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form method="POST" use:enhance={handleSubmit}>

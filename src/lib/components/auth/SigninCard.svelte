@@ -62,7 +62,7 @@
 </script>
 
 <form method="POST" action="?/signin" use:enhance on:submit|preventDefault={handleSubmit}>
-	<Card.Root>
+	<Card.Root class="w-[400px]">
 		<Card.Header>
 			<Card.Title>{("signin")}</Card.Title>
 			<Card.Description>Enter your email below to sign in.</Card.Description>
@@ -125,11 +125,11 @@
 					{:else if isLoading}
 						<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 					{/if}
-					{("signin")}
+					{("Sign In")}
 				</Button>
 
 				<div class="text-center">
-					<a href="/auth/password/reset" class="font-semibold">{("forgotPassword")}</a>
+					<a href="/auth/password/reset" class="font-semibold">{("Forgot Password")}</a>
 				</div>
 			</div>
 

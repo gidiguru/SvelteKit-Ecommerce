@@ -73,7 +73,7 @@ function getFirstError(field: keyof FormData): string | undefined {
 </script>
 
 <form method="POST" action="?/signup" use:enhance>
-	<Card.Root>
+	<Card.Root class="w-[400px]">
 		<Card.Header class="space-y-1 items-center">
 			<Card.Title class="text-2xl" />
 			<Card.Description />

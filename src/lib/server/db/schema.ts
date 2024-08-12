@@ -25,7 +25,8 @@ export const user = pgTable(
 		email: varchar('email', { length: 100 }).notNull().unique(),
 		stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique(),
 		password: varchar('password', { length: 255 }), // New field for password
-		terms: boolean('terms')
+		terms: boolean('terms'),
+		token: varchar('token')
 	},
 	(table) => {
 		return {

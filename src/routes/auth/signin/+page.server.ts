@@ -129,29 +129,5 @@ export const actions: Actions = {
         event.locals.auth.setSession(null);
         throw redirect(302, "/auth/signin");
     },
-
-    //github: async (event) => {
-    //    const [url, state] = await github.createAuthorizationURL();
-    //    event.cookies.set("github_oauth_state", state, {
-    //        path: "/",
-    //        secure: process.env.NODE_ENV === "production",
-    //        httpOnly: true,
-    //        maxAge: 60 * 10,
-    //        sameSite: "lax"
-    //    });
-    //    throw redirect(302, url.toString());
-    //},
-
-    //google: async (event) => {
-    //    const [url, state] = await google.createAuthorizationURL();
-    //    event.cookies.set("google_oauth_state", state, {
-    //        path: "/",
-    //        secure: process.env.NODE_ENV === "production",
-    //        httpOnly: true,
-    //        maxAge: 60 * 10,
-    //        sameSite: "lax"
-    //    });
-    //    throw redirect(302, url.toString());
-    //}
 };
 
