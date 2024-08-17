@@ -1,8 +1,7 @@
 import { db } from '$lib/server/db';
-import { product, productImage, productSize } from '$lib/server/db/schema';
+import { product, productImage, productType } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { and, asc, desc, eq } from 'drizzle-orm';
-
 
 export const load = async ({ params }: { params: any }) => {
 	const firstProduct = await db.query.product.findFirst({
@@ -17,9 +16,6 @@ export const load = async ({ params }: { params: any }) => {
 					tag: true
 				}
 			},
-			sizes: {
-				orderBy: asc(productSize.price)
-			}
 		}
 	});
 

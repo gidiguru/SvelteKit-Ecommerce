@@ -2,7 +2,7 @@
 import {
     product,
     productImage,
-    productSize,
+    productType,
     productTag,
     productToProductTag,
     user,
@@ -23,8 +23,24 @@ const { Pool } = pg;
     const pool = new Pool({ connectionString: process.env.DATABASE_CONNECTION_STRING });
     const db = drizzle(pool, { schema });
     //export default pool
+
+    const clearData = async () => {
+        try {
+          await db.delete(productToProductTag);
+          await db.delete(productTag);
+          await db.delete(productImage);
+          await db.delete(productType);
+          await db.delete(product);
+          console.log("Cleared existing data");
+        } catch (error) {
+          console.error("Error clearing data:", error);
+        }
+      };
     
 const seed = async () => {
+
+      // Clear existing data
+  await clearData();
 
     console.log("seeding db...")
     //console.log(db)
@@ -35,12 +51,14 @@ const seed = async () => {
             name: 'Ugreen PowerRoam 1200W 1024Wh LiFePO4 Battery Backup Solar Generator',
             desc: '1200W AC Output, up to 2500W w/ U-Turbo50 Minutes 0 to 80% Battery13 Ports for Any Power NeedEasy App Control5-Year Full-Device Warranty',
             // can be whatever
-            id: 'Ugreen_PowerRoam_1200W'
+            id: 'Ugreen_PowerRoam_1200W',
+
         },
         {
             name: 'Ugreen 6-in-1 4K HDMI USB C Hub',
             desc: 'UGREEN Premium 6-in-1 USB C Hub Conveniently adds more connections to your laptop, easily switch between your devices. Mirror or extend your screen with USB C to USB adapters HDMI port and directly stream 4K@30Hz UHD or full HD 1080P video to HDTV.',
-            id: 'Ugreen-6-in-1-4K-USB-C-Hub'
+            id: 'Ugreen-6-in-1-4K-USB-C-Hub',
+
         }
     ];
 
@@ -51,32 +69,24 @@ const seed = async () => {
     // create some product sizes
     // TODO STRIPE:
     // replace the stripeProductId and stripePriceId which you get from the dashboard
-    const productSizes = [
+    const productTypes = [
         {
             code: 'first_12_12',
-            width: 12,
-            height: 12,
             price: 99900,
-            stripeProductId: 'prod_QVdISPK4gMFkZp',
-            stripePriceId: 'price_1Pec2GCpT5aIgFcT7Iy8O5Md',
             productId: 'Ugreen_PowerRoam_1200W'
         },
 
         {
             code: 'second_12_12',
-            width: 12,
-            height: 12,
             price: 1749,
-            stripeProductId: 'prod_QViQhi5vMthfBz',
-            stripePriceId: 'price_1Peh02CpT5aIgFcTnxkbcR3B',
             productId: 'Ugreen-6-in-1-4K-USB-C-Hub'
         },
  
     ];
 
-    const insertedProductSizes = (await db.insert(productSize).values(productSizes)).rows;
+    const insertedproductTypes = (await db.insert(productType).values(productTypes)).rows;
 
-    console.log(`INSERTED: ${insertedProductSizes.length} product sizes`);
+    console.log(`INSERTED: ${insertedproductTypes.length} product sizes`);
 
     // create some product images
     // TODO CLOUDINARY: update the cloudinaryIds with your own cloudinary ids
@@ -177,7 +187,7 @@ const insertUser = async () => {
 
 const drop = async () => {
     await db.delete(product)
-    await db.delete(productSize)
+    await db.delete(productType)
     await db.delete(productImage)
     await db.delete(productTag)
     await db.delete(productToProductTag)
@@ -200,11 +210,12 @@ const deleteEmailList = async () => {
     console.log("deleted email list")
 }
 
-//seed()
+
+seed()
 //drop()
 //insertUser()
-deleteUser();
-deleteEmailList();
+//deleteUser();
+//deleteEmailList();
 //deleteSession();
 
 

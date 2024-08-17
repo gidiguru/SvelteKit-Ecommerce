@@ -1,6 +1,6 @@
 import { ensureAdmin } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { productSize } from '$lib/server/db/schema';
+import { productType } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { zfd } from 'zod-form-data';
@@ -10,8 +10,8 @@ export const load = async ({ locals, params }) => {
 
 	const sizes = await db
 		.select()
-		.from(productSize)
-		.where(eq(productSize.productId, params.productId));
+		.from(productType)
+		.where(eq(productType.productId, params.productId));
 
 	return { sizes };
 };
@@ -32,7 +32,7 @@ export const actions = {
 			error(400, res.error.name);
 		}
 
-		await db.delete(productSize).where(eq(productSize.code, res.data.code));
+		await db.delete(productType).where(eq(productType.code, res.data.code));
 
 		return { success: true };
 	},
@@ -58,7 +58,7 @@ export const actions = {
 		}
 
 		await db
-			.update(productSize)
+			.update(productType)
 			.set({
 				width: res.data.width,
 				height: res.data.height,
@@ -66,7 +66,7 @@ export const actions = {
 				stripePriceId: res.data.stripePriceId,
 				stripeProductId: res.data.stripeProductId
 			})
-			.where(eq(productSize.code, res.data.code));
+			.where(eq(productType.code, res.data.code));
 
 		return { success: true };
 	},
@@ -90,7 +90,7 @@ export const actions = {
 			error(400, res.error.name);
 		}
 
-		await db.insert(productSize).values({
+		await db.insert(productType).values({
 			...res.data,
 			productId: params.productId
 		});

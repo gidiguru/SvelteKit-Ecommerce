@@ -15,6 +15,7 @@
 		"db:push": "drizzle-kit push --config=drizzle.config.ts",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "tsx src/lib/server/db/seed.ts",
+		"db:drop": "tsx drizzle-kit drop",
 		"email": "tsx src/lib/emails/resend-test.ts",
 		"stripe:listen": "stripe listen --forward-to http://localhost:5173/api/stripe",
 		"email:dev": "email dev --dir src/lib/emails"
@@ -64,6 +65,7 @@
 		"@xata.io/cli": "0.0.0-next.v64f10283eb9a098c575590d3ea17600e350321c9",
 		"@xata.io/client": "0.0.0-next.v64f10283eb9a098c575590d3ea17600e350321c9",
 		"arctic": "^0.10.6",
+		"axios": "^1.7.4",
 		"bcrypt": "^5.1.1",
 		"bits-ui": "^0.9.9",
 		"cloudinary": "^2.3.0",

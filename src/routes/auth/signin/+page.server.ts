@@ -85,6 +85,16 @@ export const actions: Actions = {
 
         try {
 
+            // Check if the email already exists
+            const existingUser = await db
+                .select({ id: user.id })
+                .from(user)
+                .where(eq(user.email, signupForm.data.email))
+                .limit(1);
+
+            if (existingUser.length > 0) {
+                return setError(signupForm, "email", "A user with that email already exists.");
+            }
 
             const hashedPassword = await bcrypt.hash(signupForm.data.password, 10);
             const userId = crypto.randomUUID();

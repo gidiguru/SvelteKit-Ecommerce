@@ -30,11 +30,11 @@ export const actions: Actions = {
             console.log('User info:', { user: !!user, customerId });
 
             // Calculate total price
-            const total = body.reduce((sum, item) => sum + (item.size.price * item.quantity) / 100, 0);
+            const total = body.reduce((sum, item) => sum + (item.productType.price * item.quantity) / 100, 0);
             console.log('Calculated total:', total);
 
             const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = body.map((item) => ({
-                price: item.size.stripePriceId,
+                price: item.productType.price.toString(), // Convert to string if it's a number
                 quantity: item.quantity
             }));
 
@@ -70,7 +70,7 @@ export const actions: Actions = {
                         codes: JSON.stringify(
                             body.map((item) => ({
                                 quantity: item.quantity,
-                                code: item.size.code
+                                code: item.productType.code
                             }))
                         ),
                         userId: user?.id ?? ''

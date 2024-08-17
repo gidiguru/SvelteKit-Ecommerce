@@ -10,14 +10,6 @@
 
 	console.log('ResetPasswordPage: Component initialized', { data });
 
-	onMount(() => {
-		console.log('ResetPasswordPage: Component mounted');
-	});
-
-	onDestroy(() => {
-		console.log('ResetPasswordPage: Component destroyed');
-	});
-
 	afterUpdate(() => {
 		console.log('ResetPasswordPage: Component updated');
 	});

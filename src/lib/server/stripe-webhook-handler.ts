@@ -1,10 +1,15 @@
-import type Stripe from 'stripe';
-import { stripe } from '$lib/server/stripe';
+import Stripe from 'stripe';
 import { createNewOrder, createNewOrderProduct } from '$lib/server/data/orders';
 import { db } from '$lib/server/db/index';
 import { user } from '$lib/server/db/schema';
 import { sendPurchaseThankYou } from '$lib/emails/purchase-thank-you';
 import { eq } from 'drizzle-orm';
+
+
+// Initialize the Stripe client
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16', // Use the latest API version or the one you prefer
+});
 
 export async function handleStripeWebhook(
     event: Stripe.Event, 
@@ -87,7 +92,7 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
 
         for (const code of codes) {
             await createNewOrderProduct({
-                productSizeCode: code.code,
+                productTypeCode: code.code,
                 quantity: code.quantity,
                 status: 'placed',
                 orderId: session.id

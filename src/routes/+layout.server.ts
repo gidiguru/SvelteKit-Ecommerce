@@ -1,58 +1,66 @@
 import { db } from '$lib/server/db/index';
-import { order, product, productTag, productToProductTag } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { order, product, productTag, productToProductTag, productType } from '$lib/server/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export const load = async ({ locals }: { locals: any }) => {
-	// figure out how many orders have been added, and send down a valid boolean
+	// Fetch orders
 	const orders = await db
 		.select({
-			id: order.stripeOrderId
+			id: order.orderId
 		})
 		.from(order);
 
+	// Fetch collections (tags) with associated products
 	const collections = await db
-		.select({ collection: productTag.name, name: product.name, id: product.id })
+		.select({
+			collection: productTag.name,
+			name: product.name,
+			id: product.id
+		})
 		.from(productTag)
 		.innerJoin(productToProductTag, eq(productTag.name, productToProductTag.tagId))
 		.innerJoin(product, eq(product.id, productToProductTag.productId));
 
-	const reducedCollections: {
-		collection: string;
-		products: {
-			name: string;
-			id: string;
-		}[];
-	}[] = [];
-
-	collections.forEach((el) => {
-		let found = false;
-		reducedCollections.forEach((col) => {
-			if (col.collection == el.collection) {
-				col.products.push({ name: el.name, id: el.id });
-				found = true;
-			}
-		});
-		if (!found) {
-			reducedCollections.push({
+	// Process collections data
+	const reducedCollections = collections.reduce((acc, el) => {
+		const existingCollection = acc.find(col => col.collection === el.collection);
+		if (existingCollection) {
+			existingCollection.products.push({ name: el.name, id: el.id });
+		} else {
+			acc.push({
 				collection: el.collection,
 				products: [{ name: el.name, id: el.id }]
 			});
 		}
-		found = false;
-	});
+		return acc;
+	}, [] as {
+		collection: string;
+		products: { name: string; id: string; }[];
+	}[]);
 
+	// Fetch all product pieces with their types
 	const pieces = await db
 		.select({
 			id: product.id,
-			name: product.name
+			name: product.name,
+			type: productType.name,
+			price: productType.price,
+			currency: productType.currency,
+			isAvailable: productType.isAvailable
 		})
-		.from(product);
+		.from(product)
+		.leftJoin(productType, eq(product.id, productType.productId));
+
+	// Calculate availability
+	const availablePieces = pieces.filter(piece => piece.isAvailable);
+	const totalAvailable = availablePieces.length;
+	const isSoldOut = totalAvailable === 0;
 
 	return {
 		user: locals.user,
 		collections: reducedCollections,
-		isSoldOut: orders.length >= 10,
-		numberLeft: 10 - orders.length,
-		pieces
+		isSoldOut,
+		numberLeft: totalAvailable,
+		pieces: availablePieces
 	};
 };

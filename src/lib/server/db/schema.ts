@@ -9,7 +9,8 @@ import {
 	varchar,
 	pgEnum,
 	serial,
-	
+	decimal,
+	jsonb
 } from 'drizzle-orm/pg-core';
 
 export const provider = varchar('provider', {enum: ['google', 'github', 'sgs']});
@@ -24,7 +25,8 @@ export const user = pgTable(
 		isAdmin: boolean('is_admin').notNull(),
 		email: varchar('email', { length: 100 }).notNull().unique(),
 		stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique(),
-		password: varchar('password', { length: 255 }), // New field for password
+		paystackCustomerId: varchar('paystack_customer_id', { length: 100 }).unique(),
+		password: varchar('password', { length: 255 }),
 		terms: boolean('terms'),
 		token: varchar('token')
 	},
@@ -58,7 +60,6 @@ export const emailList = pgTable('email_list', {
 	email: varchar('email', { length: 255 }).primaryKey(),
 	subscribedAt: timestamp('subscribed_at').notNull(),
 	unsubscribedAt: timestamp('unsubscribed_at'),
-	// used to unsub
 	key: varchar('key', { length: 20 }).notNull()
 });
 
@@ -66,6 +67,7 @@ export const product = pgTable('product', {
 	id: varchar('id', { length: 100 }).primaryKey(),
 	name: varchar('name', { length: 100 }).notNull(),
 	desc: text('desc').notNull(),
+	baseCurrency: varchar('base_currency', { length: 3 }).notNull().default('USD'),
 	gradientColorStart: varchar('gradient_color_start', { length: 20 })
 		.notNull()
 		.default('from-red-600'),
@@ -74,12 +76,48 @@ export const product = pgTable('product', {
 		.default('via-purple-500'),
 	gradientColorStop: varchar('gradient_color_end', { length: 20 })
 		.notNull()
-		.default('to-indigo-400')
+		.default('to-indigo-400'),
+
 });
+
+export const productType = pgTable('product_type', {
+    productId: varchar('product_id', { length: 100 }).notNull(),
+    name: varchar('name', { length: 255 }),
+    code: varchar('code', { length: 100 }),
+    isAvailable: boolean('is_available').notNull().default(true),
+    width: integer('width'),
+    height: integer('height'),
+    weight: integer('weight'),
+    price: integer('price').notNull(),
+	stripePriceId: varchar('stripe_price_id', { length: 100 }).unique(),
+	stripeProductId: varchar('stripe_product_id', { length: 100 }).unique(),
+    currency: varchar('currency', { length: 3 }).notNull().default('NGN'),
+});
+
+export const productTypeRelations = relations(productType, ({ one }) => ({
+	product: one(product, {
+		fields: [productType.productId],
+		references: [product.id]
+	})
+}));
+
+export const paymentGatewayProduct = pgTable('payment_gateway_product', {
+	productTypeId: varchar('product_type_id', { length: 100 }).notNull(),
+	gatewayName: varchar('gateway_name', { length: 50 }).notNull(), // 'stripe' or 'paystack'
+	gatewayProductId: varchar('gateway_product_id', { length: 100 }).notNull(),
+	gatewayPriceId: varchar('gateway_price_id', { length: 100 }),
+});
+
+export const paymentGatewayProductRelations = relations(paymentGatewayProduct, ({ one }) => ({
+	productType: one(productType, {
+		fields: [paymentGatewayProduct.productTypeId],
+		references: [productType.productId]
+	})
+}));
+
 
 export const productRelations = relations(product, ({ many }) => ({
 	tags: many(productToProductTag),
-	sizes: many(productSize),
 	images: many(productImage),
 	reviews: many(productReview)
 }));
@@ -117,25 +155,6 @@ export const productTagRelations = relations(productTag, ({ many }) => ({
 	products: many(productToProductTag)
 }));
 
-export const productSize = pgTable('product_size', {
-	code: varchar('code', { length: 100 }).primaryKey(),
-	name: varchar('name', { length: 255 }).notNull().default('my product'),
-	isAvailable: boolean('is_available').notNull().default(true),
-	width: integer('width').notNull(),
-	height: integer('height').notNull(),
-	price: integer('price').notNull(),
-	stripePriceId: varchar('stripe_price_id', { length: 100 }).notNull(),
-	stripeProductId: varchar('stripe_product_id', { length: 100 }).notNull(),
-	productId: varchar('product_id', { length: 100 }).notNull()
-});
-
-export const productSizeRelations = relations(productSize, ({ one }) => ({
-	product: one(product, {
-		fields: [productSize.productId],
-		references: [product.id]
-	})
-}));
-
 export const productImage = pgTable('product_image', {
 	cloudinaryId: varchar('cloudinary_id', { length: 255 }).primaryKey(),
 	productId: varchar('product_id', { length: 100 }).notNull(),
@@ -168,31 +187,60 @@ export const productReviewRelations = relations(productReview, ({ one }) => ({
 	})
 }));
 
+
+// Define a more flexible CustomerDetails type
+type CustomerDetails = {
+	name?: string;
+	email?: string;
+	phone?: string;
+	address?: {
+		line1?: string;
+		line2?: string;
+		city?: string;
+		state?: string;
+		postal_code?: string;
+		country?: string;
+	};
+};
+
 export const status = pgEnum('status', ['new', 'placed', 'packaged', 'sent']);
 
 export const order = pgTable('order', {
-	// this is really the checkout session id
-	stripeOrderId: varchar('stripe_order_id', { length: 100 }).primaryKey(),
-	stripeCustomerId: varchar('stripe_customer_id', { length: 100 }),
+	orderId: varchar('order_id', { length: 100 }).primaryKey(),
+	userId: varchar('user_id', { length: 100 }).notNull(),
+	email: varchar('email', { length: 100 }).notNull().unique(),
 	totalPrice: integer('total_price').notNull(),
+	currency: varchar('currency', { length: 3 }).notNull().default('USD'),
 	timestamp: timestamp('timestamp').notNull(),
-	status: status('status').notNull().default('new')
+	status: status('status').notNull().default('new'),
+	paymentGateway: varchar('payment_gateway', { length: 50 }).notNull(), // 'stripe' or 'paystack'
+	gatewayOrderId: varchar('gateway_order_id', { length: 100 }).unique(),
+	customerDetails: jsonb('customer_details').$type<CustomerDetails>()
 });
 
-export const orderRelations = relations(order, ({ many }) => ({
-	products: many(orderProduct)
+export const paymentGatewayOrderRelations = relations(paymentGatewayProduct, ({ one }) => ({
+	productType: one(order, {
+		fields: [paymentGatewayProduct.gatewayProductId],
+		references: [order.orderId]
+	})
 }));
 
 export const orderProduct = pgTable('order_product', {
-	id: varchar('id', { length: 20 }).primaryKey(),
-	productSizeCode: varchar('product_size_code', { length: 100 }).notNull(),
+	id: varchar('id', { length: 100 }).primaryKey(),
+	orderId: varchar('order_id', { length: 100 }).notNull(),
+	productTypeId: varchar('product_type_id', { length: 100 }).notNull(),
 	quantity: integer('quantity').notNull(),
-	orderId: varchar('order_id', { length: 100 }).notNull()
+	priceAtOrder: integer('price_at_order').notNull(),
+	currencyAtOrder: varchar('currency_at_order', { length: 3 }).notNull()
 });
 
 export const orderProductRelations = relations(orderProduct, ({ one }) => ({
 	order: one(order, {
 		fields: [orderProduct.orderId],
-		references: [order.stripeOrderId]
+		references: [order.orderId]
+	}),
+	productType: one(productType, {
+		fields: [orderProduct.productTypeId],
+		references: [productType.productId]
 	})
 }));

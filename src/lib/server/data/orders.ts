@@ -29,7 +29,7 @@ export const createNewOrder = async (data: {
 
 export const createNewOrderProduct = async (data: {
 	orderId: string;
-	productSizeCode: string;
+	productTypeCode: string;
 	quantity: number;
 	status: 'placed' | 'fulfilled';
 }) => {

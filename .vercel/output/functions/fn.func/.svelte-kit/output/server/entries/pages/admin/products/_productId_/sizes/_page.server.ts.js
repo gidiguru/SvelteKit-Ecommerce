@@ -1,11 +1,11 @@
 import { e as ensureAdmin } from "../../../../../../chunks/auth.js";
-import { d as db, f as productSize } from "../../../../../../chunks/index.js";
+import { d as db, f as productType } from "../../../../../../chunks/index.js";
 import { e as error } from "../../../../../../chunks/index2.js";
 import { eq } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 const load = async ({ locals, params }) => {
   ensureAdmin(locals);
-  const sizes = await db.select().from(productSize).where(eq(productSize.productId, params.productId));
+  const sizes = await db.select().from(productType).where(eq(productType.productId, params.productId));
   return { sizes };
 };
 const actions = {
@@ -19,7 +19,7 @@ const actions = {
     if (!res.success) {
       error(400, res.error.name);
     }
-    await db.delete(productSize).where(eq(productSize.code, res.data.code));
+    await db.delete(productType).where(eq(productType.code, res.data.code));
     return { success: true };
   },
   edit: async ({ locals, request }) => {
@@ -37,13 +37,13 @@ const actions = {
     if (!res.success) {
       error(400, res.error.name);
     }
-    await db.update(productSize).set({
+    await db.update(productType).set({
       width: res.data.width,
       height: res.data.height,
       price: res.data.price,
       stripePriceId: res.data.stripePriceId,
       stripeProductId: res.data.stripeProductId
-    }).where(eq(productSize.code, res.data.code));
+    }).where(eq(productType.code, res.data.code));
     return { success: true };
   },
   create: async ({ locals, request, params }) => {
@@ -61,7 +61,7 @@ const actions = {
     if (!res.success) {
       error(400, res.error.name);
     }
-    await db.insert(productSize).values({
+    await db.insert(productType).values({
       ...res.data,
       productId: params.productId
     });

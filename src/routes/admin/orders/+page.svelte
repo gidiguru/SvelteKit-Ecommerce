@@ -6,14 +6,16 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Drawer from '$lib/components/ui/drawer';
+	import type { PaystackCustomer, CustomerDetails, OrderDetails } from '$lib/server/paystack'; // Import the new type
 
 	export let data;
 
-	async function handleSetStatus(stripeOrderId: string, status: string) {
+	async function handleSetStatus(orderId: string, status: string, paymentGateway: 'stripe' | 'paystack') {
 		const formData = new FormData();
 
-		formData.append('stripeOrderId', stripeOrderId);
+		formData.append('orderId', orderId);
 		formData.append('status', status);
+		formData.append('paymentGateway', paymentGateway);
 
 		const response = await fetch(`/admin/orders?/setStatus`, {
 			method: 'POST',
@@ -23,7 +25,6 @@
 		const result = deserialize(await response.text());
 
 		if (result.type === 'success') {
-			// rerun all `load` functions, following the successful update
 			await invalidateAll();
 		}
 	}
@@ -34,6 +35,62 @@
 		}
 		return str;
 	}
+// Type guard for CustomerDetails
+function isCustomerDetails(customer: any): customer is CustomerDetails {
+    return customer && typeof customer.name === 'string';
+}
+
+// Type guard for PaystackCustomer
+function isPaystackCustomer(customer: any): customer is PaystackCustomer {
+    return customer && typeof customer.email === 'string' && (typeof customer.first_name === 'string' || typeof customer.last_name === 'string');
+}
+
+// Update the getCustomerName function
+function getCustomerName(order: Partial<OrderDetails>): string {
+    const customer = order.customerDetails;
+    if (isCustomerDetails(customer)) {
+        return customer.name || 'N/A';
+    } else if (isPaystackCustomer(customer)) {
+        return `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'N/A';
+    }
+    return 'N/A';
+}
+
+// Update the getCustomerEmail function
+function getCustomerEmail(order: Partial<OrderDetails>): string {
+    if (order.email) {
+        return order.email;
+    }
+    const customer = order.customerDetails;
+    if (isCustomerDetails(customer) || isPaystackCustomer(customer)) {
+        return customer.email || 'N/A';
+    }
+    return 'N/A';
+}
+
+// Update the getCustomerAddress function
+function getCustomerAddress(order: Partial<OrderDetails>): string {
+    const customer = order.customerDetails;
+    if (isCustomerDetails(customer) && customer.address) {
+        const { line1, line2, city, state, postal_code, country } = customer.address;
+        return [line1, line2, city, state, postal_code, country].filter(Boolean).join(', ') || 'N/A';
+    }
+    return 'N/A';
+}
+
+// Update the getCustomerPhone function
+function getCustomerPhone(order: Partial<OrderDetails>): string {
+    const customer = order.customerDetails;
+    if (isCustomerDetails(customer) || isPaystackCustomer(customer)) {
+        return customer.phone || 'N/A';
+    }
+    return 'N/A';
+}
+
+	function getOrderId(order: any) {
+		return order.paymentGateway === 'stripe' ? order.stripeOrderId : order.paystackTransactionId;
+	}
+	
 
 	let openCustomerViewIdx = -1;
 	$: customerViewOpen = openCustomerViewIdx >= 0;
@@ -43,56 +100,44 @@
 	<Table.Root class="border-0">
 		<Table.Header>
 			<Table.Row>
-				<Table.Head class="w-[100px]">id</Table.Head>
-				<Table.Head>status</Table.Head>
-				<Table.Head>email</Table.Head>
-				<Table.Head>date</Table.Head>
-				<Table.Head class="text-right">amount</Table.Head>
+				<Table.Head class="w-[100px]">ID</Table.Head>
+				<Table.Head>Status</Table.Head>
+				<Table.Head>Email</Table.Head>
+				<Table.Head>Date</Table.Head>
+				<Table.Head>Gateway</Table.Head>
+				<Table.Head class="text-right">Amount</Table.Head>
+				<Table.Head>Actions</Table.Head>
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
 			{#each data.orders as order, i}
 				<Table.Row>
-					<Table.Cell class="font-medium">{truncateString(order.stripeOrderId, 10)}</Table.Cell>
+					<Table.Cell class="font-medium">{truncateString(getOrderId(order), 10)}</Table.Cell>
 					<Table.Cell>
 						<DropdownMenu.Root>
-							<DropdownMenu.Trigger class="hover:text-underline"
-								>{order.status}</DropdownMenu.Trigger
-							>
+							<DropdownMenu.Trigger class="hover:text-underline">{order.status}</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
 								<DropdownMenu.Group>
-									<DropdownMenu.Label>set status</DropdownMenu.Label>
+									<DropdownMenu.Label>Set status</DropdownMenu.Label>
 									<DropdownMenu.Separator />
-									<DropdownMenu.Item on:click={() => handleSetStatus(order.stripeOrderId, 'new')}
-										>new</DropdownMenu.Item
-									>
-									<DropdownMenu.Item on:click={() => handleSetStatus(order.stripeOrderId, 'placed')}
-										>placed</DropdownMenu.Item
-									>
-									<DropdownMenu.Item
-										on:click={() => handleSetStatus(order.stripeOrderId, 'packaged')}
-										>packaged</DropdownMenu.Item
-									>
-									<DropdownMenu.Item on:click={() => handleSetStatus(order.stripeOrderId, 'sent')}
-										>sent</DropdownMenu.Item
-									>
+									{#each ['new', 'placed', 'packaged', 'sent'] as status}
+										<DropdownMenu.Item on:click={() => handleSetStatus(getOrderId(order), status, order.paymentGateway)}>
+											{status}
+										</DropdownMenu.Item>
+									{/each}
 								</DropdownMenu.Group>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 					</Table.Cell>
 					<Table.Cell>{order.email}</Table.Cell>
 					<Table.Cell>{order.timestamp.toLocaleDateString()}</Table.Cell>
+					<Table.Cell>{order.paymentGateway}</Table.Cell>
 					<Table.Cell class="text-right">${(order.totalPrice / 100).toFixed(2)}</Table.Cell>
 
 					<Table.Cell>
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger asChild let:builder>
-								<Button
-									variant="ghost"
-									builders={[builder]}
-									size="icon"
-									class="relative w-8 h-8 p-0"
-								>
+								<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0">
 									<span class="sr-only">Open menu</span>
 									<MoreHorizontal class="w-4 h-4" />
 								</Button>
@@ -100,24 +145,19 @@
 							<DropdownMenu.Content>
 								<DropdownMenu.Group>
 									<DropdownMenu.Label>Actions</DropdownMenu.Label>
-									<DropdownMenu.Item
-										on:click={() => navigator.clipboard.writeText(order.stripeOrderId)}
-									>
-										Copy Stripe ID
+									<DropdownMenu.Item on:click={() => navigator.clipboard.writeText(getOrderId(order))}>
+										Copy Order ID
 									</DropdownMenu.Item>
 								</DropdownMenu.Group>
 								<DropdownMenu.Separator />
-								<!-- VIEW CUSTOMER -->
 								<DropdownMenu.Item on:click={() => (openCustomerViewIdx = i)}>
-									view customer
+									View customer
 								</DropdownMenu.Item>
-								<!-- VIEW PAYMENT DETAILS -->
-								<DropdownMenu.Item>view payment details</DropdownMenu.Item>
-								<!-- VIEW PRODUCTS -->
-								<DropdownMenu.Item>view products</DropdownMenu.Item>
-								<DropdownMenu.Item on:click={() => goto(`/admin/orders/${order.stripeOrderId}`)}
-									>order details</DropdownMenu.Item
-								>
+								<DropdownMenu.Item>View payment details</DropdownMenu.Item>
+								<DropdownMenu.Item>View products</DropdownMenu.Item>
+								<DropdownMenu.Item on:click={() => goto(`/admin/orders/${getOrderId(order)}`)}>
+									Order details
+								</DropdownMenu.Item>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 					</Table.Cell>
@@ -128,21 +168,21 @@
 </div>
 
 <Drawer.Root bind:open={customerViewOpen} onClose={() => (openCustomerViewIdx = -1)}>
-	<Drawer.Content>
-		<Drawer.Header>
-			<Drawer.Title>Customer Info</Drawer.Title>
-			<Drawer.Description>
-				<h2><b>Name:</b> {data.orders[openCustomerViewIdx].customerInfo.name}</h2>
-				<h2><b>Email:</b> {data.orders[openCustomerViewIdx].customerInfo.email}</h2>
-				<h2><b>Address:</b> {data.orders[openCustomerViewIdx].customerInfo.address?.line1}</h2>
-				<h2><b>City:</b> {data.orders[openCustomerViewIdx].customerInfo.address?.city}</h2>
-				<h2><b>State:</b> {data.orders[openCustomerViewIdx].customerInfo.address?.state}</h2>
-				<h2><b>Zip:</b> {data.orders[openCustomerViewIdx].customerInfo.address?.postal_code}</h2>
-				<h2><b>Country:</b> {data.orders[openCustomerViewIdx].customerInfo.address?.country}</h2>
-			</Drawer.Description>
-		</Drawer.Header>
-		<Drawer.Footer>
-			<Drawer.Close class="w-[300px]">Cancel</Drawer.Close>
-		</Drawer.Footer>
-	</Drawer.Content>
+    <Drawer.Content>
+        <Drawer.Header>
+            <Drawer.Title>Customer Info</Drawer.Title>
+            <Drawer.Description>
+                {#if customerViewOpen && data.orders[openCustomerViewIdx]}
+        {@const order = data.orders[openCustomerViewIdx]}
+        <h2><b>Name:</b> {getCustomerName(order)}</h2>
+        <h2><b>Email:</b> {getCustomerEmail(order)}</h2>
+        <h2><b>Address:</b> {getCustomerAddress(order)}</h2>
+        <h2><b>Phone:</b> {getCustomerPhone(order)}</h2>
+    {/if}
+            </Drawer.Description>
+        </Drawer.Header>
+        <Drawer.Footer>
+            <Drawer.Close class="w-[300px]">Close</Drawer.Close>
+        </Drawer.Footer>
+    </Drawer.Content>
 </Drawer.Root>

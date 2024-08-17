@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { getCart, removeFromCart, addToCart, decrementQuantity } from '$lib/client/cart';
-	import { applyAction, deserialize } from '$app/forms';
-	import type { ActionResult } from '@sveltejs/kit';
 	import { CldImage } from 'svelte-cloudinary';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	export let data;
 
 	let cart: any[] = [];
 	let total: number = 0;
+	let paymentGateway: 'stripe' | 'paystack' = 'stripe';
 
 	onMount(() => {
 		console.log('Cart component mounted');
@@ -21,7 +19,7 @@
 	});
 
 	function calculateTotal() {
-		total = cart.reduce((sum, item) => sum + (item.size.price * item.quantity) / 100, 0);
+		total = cart.reduce((sum, item) => sum + (item.productType.price * item.quantity), 0);
 		console.log('Total calculated:', total);
 	}
 
@@ -31,55 +29,66 @@
 		calculateTotal();
 	}
 
-	async function handleSubmit(event: SubmitEvent) {
-    console.log('handleSubmit called');
-    event.preventDefault();
-    
-    try {
-      console.log('Preparing form data');
-      const formData = new FormData(event.target as HTMLFormElement);
-      formData.append('cart', JSON.stringify(cart));
+	async function handleSubmit(event: Event) {
+		console.log('handleSubmit called');
+		const submitEvent = event as SubmitEvent;
+		submitEvent.preventDefault();
+		
+		try {
+			console.log('Preparing form data');
+			const formData = new FormData(submitEvent.target as HTMLFormElement);
+			formData.append('cart', JSON.stringify(cart));
+			formData.append('paymentGateway', paymentGateway);
 
-      console.log('Sending POST request');
-      const response = await fetch('/cart', {
-        method: 'POST',
-        body: formData
-      });
+			console.log('Sending POST request');
+			const response = await fetch('/cart', {
+				method: 'POST',
+				body: formData
+			});
 
-      console.log('Response received:', response.status, response.statusText);
-      const result = await response.json();
-      console.log('Parsed result:', result);
+			console.log('Response received:', response.status, response.statusText);
+			const result = await response.json();
+			console.log('Parsed result:', result);
 
-      if (result.type === 'success' && result.data) {
-        const parsedData = JSON.parse(result.data);
-        console.log('Parsed data:', parsedData);
-        
-        if (Array.isArray(parsedData) && parsedData[1] === 'redirect' && typeof parsedData[2] === 'string') {
-          const redirectUrl = parsedData[2];
-          console.log('Redirecting to:', redirectUrl);
-          window.location.href = redirectUrl;
-        } else {
-          console.log('Unexpected data format:', parsedData);
-        }
-      } else if (result.type === 'error') {
-        console.error('Checkout failed:', result.message);
-        // TODO: Display error message to user
-      } else {
-        console.log('Unexpected response type:', result);
-        // TODO: Handle unexpected response
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      // TODO: Display error message to user
-    }
-  }
-  
+			if (result.type === 'success' && result.data) {
+				const parsedData = JSON.parse(result.data);
+				console.log('Parsed data:', parsedData);
+				
+				if (Array.isArray(parsedData) && parsedData[1] === 'redirect' && typeof parsedData[2] === 'string') {
+					const redirectUrl = parsedData[2];
+					console.log('Redirecting to:', redirectUrl);
+					window.location.href = redirectUrl;
+				} else {
+					console.log('Unexpected data format:', parsedData);
+				}
+			} else if (result.type === 'error') {
+				console.error('Checkout failed:', result.message);
+				// TODO: Display error message to user
+			} else {
+				console.log('Unexpected response type:', result);
+				// TODO: Handle unexpected response
+			}
+		} catch (error) {
+			console.error('Checkout error:', error);
+			// TODO: Display error message to user
+		}
+	}
+	
+	function formatPrice(price: number): string {
+		return (price / 100).toFixed(2);
+	}
+
+	function handlePaymentClick(gateway: 'stripe' | 'paystack') {
+		paymentGateway = gateway;
+		const submitEvent = new Event('submit');
+		handleSubmit(submitEvent);
+	}
 </script>
 
 <div class="w-full flex md:px-20 md:py-4 md:gap-x-16 bg-white flex-col gap-3 px-2 grow">
 	<h1 class="md:text-4xl text-3xl font-semibold text-black">Review Shopping Cart</h1>
 
-	{#if total < 125}
+	{#if total < 12500}
 		<p class="text-neutral-500 md:text-2xl sm:text-xl sm:font-light">
 			All orders over $125.00 will receive free shipping!
 		</p>
@@ -92,26 +101,13 @@
 		</p>
 	{/if}
 
-	{#if cart.some(item => item.size.width >= 11)}
-		<p class="flex flex-row gap-1 items-center text-neutral-500 md:text-2xl sm:text-xl sm:font-light">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="green"/>
-			</svg>
-			<span class="text-green-600">Your order qualifies</span> for an exclusive FREE print
-		</p>
-	{:else}
-		<p class="text-neutral-500 md:text-2xl sm:text-xl sm:font-light">
-			All orders which include a Medium print (11x14 or 11x11) will include an exclusive free print,
-			add one now!
-		</p>
-	{/if}
-
 	<div class="flex flex-row justify-center items-center sm:justify-end sm:top-[77px] w-full sticky top-[62px] bg-white p-3">
 		<p class="text-xl font-light text-neutral-600 px-3">
-			Subtotal <span class="text-xl font-semibold text-black">${total.toFixed(2)}</span>
+			Subtotal <span class="text-xl font-semibold text-black">${formatPrice(total)}</span>
 		</p>
 		<form on:submit|preventDefault={handleSubmit}>
 			<input type="hidden" name="cart" value={JSON.stringify(cart)} />
+			<input type="hidden" name="paymentGateway" value={paymentGateway} />
 			
 			{#if data.isSoldOut}
 				<Button type="submit" disabled={true}>Sold out</Button>
@@ -133,7 +129,7 @@
 				</Button>
 			{:else}
 				<Dialog.Root>
-					<Dialog.Trigger>
+					<Dialog.Trigger asChild>
 						<Button
 							class="bg-[#0071e3] drop-shadow-sm hover:bg-neutral-900 text-lg p-6 font-light rounded-lg"
 						>
@@ -142,24 +138,30 @@
 					</Dialog.Trigger>
 					<Dialog.Content class="sm:max-w-[425px]">
 						<Dialog.Header>
-							<Dialog.Title>Account</Dialog.Title>
+							<Dialog.Title>Payment Method</Dialog.Title>
 							<Dialog.Description>
-								Would you like to create an account to save your information, manage your orders,
-								and get special offers?
+								Choose your preferred payment method:
 							</Dialog.Description>
 						</Dialog.Header>
-						<form
-							class="flex flex-row justify-center gap-x-5 w-full"
-							on:submit|preventDefault={handleSubmit}
-						>
-							<Button type="submit" class="w-full">Continue as guest</Button>
-						</form>
-						<Button
-							type="button"
-							on:click={() => goto('/auth/signin')}
-							class="w-full"
-							variant="outline">Create account</Button
-						>
+						<div class="flex flex-col gap-4">
+							<Button
+								on:click={() => handlePaymentClick('stripe')}
+								class="w-full"
+							>
+								Pay with Stripe
+							</Button>
+							<Button
+								on:click={() => handlePaymentClick('paystack')}
+								class="w-full"
+							>
+								Pay with Paystack
+							</Button>
+						</div>
+						<Dialog.Footer>
+
+								<Button variant="outline">Cancel</Button>
+
+						</Dialog.Footer>
 					</Dialog.Content>
 				</Dialog.Root>
 			{/if}
@@ -179,11 +181,11 @@
 						<div class="flex flex-col sm:flex-row sm:items-center justify-between">
 							<h2 class="text-2xl md:text-4xl font-jura">{cartItem.productName}</h2>
 							<p class="text-xl font-bold">
-								${((cartItem.size.price * cartItem.quantity) / 100).toFixed(2)}
+								${formatPrice(cartItem.productType.price * cartItem.quantity)}
 							</p>
 						</div>
 						<p class="text-xl text-neutral-600">
-							{cartItem.size.width}" x {cartItem.size.height}"
+							{cartItem.productType.width}" x {cartItem.productType.height}"
 						</p>
 						<div class="flex flex-row items-center gap-3">
 							<Button

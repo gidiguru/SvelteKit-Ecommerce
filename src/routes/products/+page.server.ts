@@ -34,8 +34,7 @@ export const load = async ({ url }: { url: any }) => {
 				orderBy: desc(productImage.isPrimary),
 				limit: 1
 			},
-			sizes: true
-		},
+			},
 		// TODO: Change to params
 		limit: 6,
 		offset: 0

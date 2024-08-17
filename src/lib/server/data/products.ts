@@ -3,7 +3,7 @@ import {
 	product,
 	productImage,
 	productReview,
-	productSize,
+	productType,
 	productToProductTag
 } from '$lib/server/db/schema';
 import { desc, eq } from 'drizzle-orm';
@@ -13,7 +13,7 @@ export const deleteOneProduct = async (id: string) => {
 	await db.delete(productImage).where(eq(productImage.productId, id));
 
 	// clear out the sizes
-	await db.delete(productSize).where(eq(productSize.productId, id));
+	await db.delete(productType).where(eq(productType.productId, id));
 
 	// clear out the reviews
 	await db.delete(productReview).where(eq(productReview.productId, id));

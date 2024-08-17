@@ -6,7 +6,7 @@ export type TCartEntry = {
 	productId: string;
 	productImage: string;
 	productName: string;
-	size: {
+	productType: {
 		width: number;
 		height: number;
 		code: string;
@@ -26,7 +26,7 @@ export const addToCart = (data: TCartEntry) => {
 	if (cur) {
 		const items = JSON.parse(cur) as TCartEntry[];
 		// check if the item is already in the cart
-		const curIdx = items.findIndex((c) => c.size.code === data.size.code);
+		const curIdx = items.findIndex((c) => c.productType.code === data.productType.code);
 		if (curIdx >= 0) {
 			items[curIdx].quantity += 1;
 		} else {

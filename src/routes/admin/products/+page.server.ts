@@ -1,7 +1,7 @@
 import { ensureAdmin } from '$lib/server/auth';
 import { fetchAllProducts } from '$lib/server/data/products';
 import { db } from '$lib/server/db/index.js';
-import { product, productSize } from '$lib/server/db/schema.js';
+import { product, productType } from '$lib/server/db/schema.js';
 import { parse } from 'csv-parse';
 import { generateId } from 'lucia';
 
@@ -57,7 +57,7 @@ export const actions = {
 
 			const productIdx = createdProducts.findIndex((v) => v.name === entryProductName);
 			if (productIdx >= 0) {
-				await db.insert(productSize).values({
+				await db.insert(productType).values({
 					name: entry['Product Name'].split(',')[1].trim() ?? '',
 					price: entry.Amount * 100,
 					stripePriceId: entry['Price ID'],
@@ -82,7 +82,7 @@ export const actions = {
 					id: nId
 				});
 
-				await db.insert(productSize).values({
+				await db.insert(productType).values({
 					width: entry.Width,
 					height: entry.Height,
 					code: entry.Code,

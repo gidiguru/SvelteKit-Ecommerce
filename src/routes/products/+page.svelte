@@ -17,16 +17,7 @@
 
 	let displayMode = 'sm';
 
-	// this feels really stupid...
-//	$: searchQuery !== '' && handleInputChange(searchQuery);
-
-//	function handleInputChange(query: string) {
-//		clearTimeout(debounceTimer);
-
-//		debounceTimer = setTimeout(() => {
-//			handleSearch(query);
-//		}, 400);
-//	}
+	$: selected = ($page.state as any).selected;
 
 	function addParam(param: string) {
 		const curParams = $page.url.searchParams.getAll('tag');
@@ -84,8 +75,6 @@
 			searchResults = searchedTags;
 		}
 	}
-
-	$: selected = ($page.state as any).selected;
 </script>
 
 <!-- MODAL -->
@@ -154,14 +143,15 @@
 			{#each data.products as product}
 				<ProductCard
 					itemData={{
+						id: product.id,
 						name: product.name,
-						productId: product.id,
-						cloudinaryId: product.images.length > 0 ? product.images[0].cloudinaryId : null,
-						tags: product.tags.map((tag) => tag.tagId),
-						selectTag: addParam,
-						displayMode: displayMode,
-						sizes: product.sizes,
-						desc: product.desc
+						desc: product.desc,
+						baseCurrency: product.baseCurrency,
+						gradientColorStart: product.gradientColorStart,
+						gradientColorVia: product.gradientColorVia,
+						gradientColorStop: product.gradientColorStop,
+						tags: product.tags.map(tag => ({ name: tag.tagId, desc: '' })),
+						images: product.images,
 					}}
 				/>
 			{/each}

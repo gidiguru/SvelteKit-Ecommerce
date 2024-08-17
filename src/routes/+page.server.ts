@@ -1,80 +1,86 @@
 import { db } from '$lib/server/db';
-import { productImage } from '$lib/server/db/schema';
-import { desc } from 'drizzle-orm';
+import { productImage, productType, product, productTag, productToProductTag } from '$lib/server/db/schema';
+import { desc, eq, sql } from 'drizzle-orm';
 
 type SendCollection = {
-	name: string;
-	tagLine: string;
-	productInfo: {
-		cloudinaryId: string | null;
-		secondaryCloudinary: string | null;
-		name: string;
-		availableSizes: string[];
-		soldOutSizes: string[];
-		link: string;
-	}[];
-	dark: boolean;
-	collectionTag: string;
+    name: string;
+    tagLine: string;
+    productInfo: {
+        cloudinaryId: string | null;
+        secondaryCloudinary: string | null;
+        name: string;
+        availableSizes: string[];
+        soldOutSizes: string[];
+        link: string;
+    }[];
+    dark: boolean;
+    collectionTag: string;
 };
+
 export const load = async () => {
-	const collections = await db.query.productTag.findMany({
-		with: {
-			products: {
-				with: {
-					product: {
-						with: {
-							sizes: true,
-							images: {
-								limit: 2,
-								orderBy: desc(productImage.isVertical)
-							}
-						}
-					}
-				}
-			}
-		}
-	});
+    // Fetch collections with their associated products and images
+    const collections = await db.select({
+        tagName: productTag.name,
+        tagDesc: productTag.desc,
+        productId: product.id,
+        productName: product.name,
+        imageCloudinaryId: productImage.cloudinaryId,
+        imageOrder: productImage.order,
+    })
+    .from(productTag)
+    .leftJoin(productToProductTag, eq(productTag.name, productToProductTag.tagId))
+    .leftJoin(product, eq(productToProductTag.productId, product.id))
+    .leftJoin(productImage, eq(product.id, productImage.productId))
+    .orderBy(productTag.name, productImage.order);
 
-	// transform
-	const sendData: SendCollection[] = [];
+    // Fetch all product types
+    const productTypes = await db.select().from(productType);
 
-	collections.forEach((c) => {
-		if (c.products.length > 0) {
-			sendData.push({
-				dark: true,
-				collectionTag: c.name,
-				name: c.name,
-				tagLine: c.desc,
-				productInfo: c.products.map((p) => {
-					return {
-						cloudinaryId: p.product.images.length > 0 ? p.product.images[0].cloudinaryId : null,
-						secondaryCloudinary:
-							p.product.images.length > 1 ? p.product.images[1].cloudinaryId : null,
-						name: p.product.name,
-						availableSizes: p.product.sizes
-							.map((s) => {
-								if (s.isAvailable) {
-									return `${s.width}x${s.height}`;
-								} else {
-									return '';
-								}
-							})
-							.filter((s) => s !== ''),
-						soldOutSizes: p.product.sizes
-							.map((s) => {
-								if (!s.isAvailable) {
-									return `${s.width}x${s.height}`;
-								} else {
-									return '';
-								}
-							})
-							.filter((s) => s !== ''),
-						link: `/products/${p.product.id}`
-					};
-				})
-			});
-		}
-	});
+    // Create a map for quick lookup of product types
+    const productTypeMap = new Map(
+        productTypes.map(pt => [pt.productId, pt])
+    );
 
-	return { collections: sendData };
+    // Process and transform the data
+    const sendData: SendCollection[] = [];
+    let currentCollection: SendCollection | null = null;
+
+    collections.forEach((row) => {
+        if (!currentCollection || currentCollection.name !== row.tagName) {
+            if (currentCollection) {
+                sendData.push(currentCollection);
+            }
+            currentCollection = {
+                dark: true,
+                collectionTag: row.tagName ?? '',
+                name: row.tagName ?? '',
+                tagLine: row.tagDesc ?? '',
+                productInfo: []
+            };
+        }
+
+        if (row.productId && row.productName && !currentCollection.productInfo.some(p => p.link === `/products/${row.productId}`)) {
+            const pt = productTypeMap.get(row.productId);
+            currentCollection.productInfo.push({
+                cloudinaryId: row.imageCloudinaryId,
+                secondaryCloudinary: null,
+                name: row.productName,
+                availableSizes: pt && pt.isAvailable && pt.width && pt.height ? [`${pt.width}x${pt.height}`] : [],
+                soldOutSizes: pt && !pt.isAvailable && pt.width && pt.height ? [`${pt.width}x${pt.height}`] : [],
+                link: `/products/${row.productId}`
+            });
+        } else if (row.productId && row.imageOrder === 2) {
+            // Update secondary image if this is the second image for the product
+            const product = currentCollection.productInfo.find(p => p.link === `/products/${row.productId}`);
+            if (product) {
+                product.secondaryCloudinary = row.imageCloudinaryId;
+            }
+        }
+    });
+
+    if (currentCollection) {
+        sendData.push(currentCollection);
+    }
+
+    return { collections: sendData };
 };

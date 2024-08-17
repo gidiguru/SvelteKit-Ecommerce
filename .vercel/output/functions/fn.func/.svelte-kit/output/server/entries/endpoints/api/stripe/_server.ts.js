@@ -208,7 +208,7 @@ async function handleCheckoutSessionCompleted(event) {
     console.log("New order created");
     for (const code of codes) {
       await createNewOrderProduct({
-        productSizeCode: code.code,
+        productTypeCode: code.code,
         quantity: code.quantity,
         status: "placed",
         orderId: session.id

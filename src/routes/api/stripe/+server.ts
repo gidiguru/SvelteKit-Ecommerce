@@ -66,7 +66,7 @@ export const POST = async ({ request }: { request: any }) => {
 
 				for (let i = 0; i < codes.length; i++) {
 					await createNewOrderProduct({
-						productSizeCode: codes[i].code,
+						productTypeCode: codes[i].code,
 						quantity: codes[i].quantity,
 						status: 'placed',
 						orderId: sessionWithCustomer.id

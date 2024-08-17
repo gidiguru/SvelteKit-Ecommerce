@@ -1,96 +1,150 @@
 import { ensureAdmin } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { order } from '$lib/server/db/schema';
+import { order, orderProduct, productType, product } from '$lib/server/db/schema';
 import { stripe } from '$lib/server/stripe';
 import { error } from '@sveltejs/kit';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, or } from 'drizzle-orm';
 import type Stripe from 'stripe';
 import { zfd } from 'zod-form-data';
+import { paystack } from '$lib/server/paystack';
+import type { CustomerDetails, PaystackCustomer, PaystackTransaction } from '$lib/server/paystack';
+
+type PaymentGateway = 'stripe' | 'paystack';
 
 type OrderDetails = {
-	timestamp: Date;
-	stripeCustomerId: string | null;
-	stripeOrderId: string;
-	totalPrice: number;
-	status: 'new' | 'placed' | 'packaged' | 'sent';
-	customerInfo: Stripe.Checkout.Session.CustomerDetails;
-	email: string;
-	products: {
-		id: string;
-		productSizeCode: string;
-		quantity: number;
-	}[];
+    id: string;
+    timestamp: Date;
+    userId: string;
+    totalPrice: number;
+    currency: string;
+    status: 'new' | 'placed' | 'packaged' | 'sent';
+    paymentGateway: PaymentGateway;
+    gatewayOrderId: string | null;
+    customerDetails: Stripe.Checkout.Session.CustomerDetails | PaystackCustomer | CustomerDetails | null;
+    products: {
+        id: string;
+        productId: string;
+        productTypeId: string;
+        quantity: number;
+        priceAtOrder: number;
+        currencyAtOrder: string;
+        productName: string;
+        typeName: string;
+    }[];
 };
 
-export const load = async ({ locals, params }) => {
-	ensureAdmin(locals);
-
-	// grab the orders
-	const orderDB = await db.query.order.findFirst({
-		where: eq(order.stripeOrderId, params.orderId),
-		orderBy: desc(order.timestamp),
-		with: {
-			products: true
-		}
-	});
-
-	if (!orderDB) {
-		error(404, 'Order not found...');
-	}
-
-	const session = await stripe.checkout.sessions.retrieve(orderDB.stripeOrderId);
-
-	if (!session.customer_details) {
-		error(404, 'Customer not found...');
-	}
-
-	const sendOrder: OrderDetails = {
-		stripeCustomerId: orderDB.stripeCustomerId,
-		stripeOrderId: orderDB.stripeOrderId,
-		timestamp: orderDB.timestamp,
-		totalPrice: orderDB.totalPrice,
-		customerInfo: session.customer_details,
-		status: orderDB.status,
-		email: session.customer_details.email ?? '',
-		products: orderDB.products
-	};
-
-	return { order: sendOrder };
-};
-
-// yea GPT gave me this one lol, never seen "status is" before
-function isOrderStatus(status: string): status is 'new' | 'placed' | 'packaged' | 'sent' {
-	return ['new', 'placed', 'packaged', 'sent'].includes(status);
+function isValidPaymentGateway(gateway: string): gateway is PaymentGateway {
+    return gateway === 'stripe' || gateway === 'paystack';
 }
 
-export const actions = {
-	setStatus: async ({ locals, request }) => {
-		ensureAdmin(locals);
+export const load = async ({ locals, params }) => {
+    ensureAdmin(locals);
 
-		const data = await request.formData();
+    const orderDB = await db.query.order.findFirst({
+        where: eq(order.id, params.orderId),
+        with: {
+            products: {
+                with: {
+                    productType: {
+                        with: {
+                            product: true
+                        }
+                    }
+                }
+            }
+        }
+    });
 
-		const schema = zfd.formData({
-			stripeOrderId: zfd.text(),
-			status: zfd.text()
-		});
+    if (!orderDB) {
+        throw error(404, 'Order not found...');
+    }
 
-		const res = schema.safeParse(data);
+    if (!isValidPaymentGateway(orderDB.paymentGateway)) {
+        throw error(400, 'Invalid payment gateway');
+    }
 
-		if (!res.success) {
-			error(400, res.error.name);
-		}
+    let customerDetails: Stripe.Checkout.Session.CustomerDetails | PaystackCustomer | null = null;
 
-		if (!isOrderStatus(res.data.status)) {
-			error(400, 'invalid status');
-		}
+    try {
+        if (orderDB.paymentGateway === 'stripe' && orderDB.gatewayOrderId) {
+            const session = await stripe.checkout.sessions.retrieve(orderDB.gatewayOrderId);
+            customerDetails = session.customer_details || null;
+        } else if (orderDB.paymentGateway === 'paystack' && orderDB.gatewayOrderId) {
+            const transaction = await fetchPaystackTransaction(orderDB.gatewayOrderId);
+            customerDetails = transaction.customer;
+        }
 
-		await db
-			.update(order)
-			.set({
-				status: res.data.status
-			})
-			.where(eq(order.stripeOrderId, res.data.stripeOrderId));
+        const sendOrder: OrderDetails = {
+            id: orderDB.id,
+            timestamp: orderDB.timestamp,
+            userId: orderDB.userId,
+            totalPrice: orderDB.totalPrice,
+            currency: orderDB.currency,
+            status: orderDB.status,
+            paymentGateway: orderDB.paymentGateway,
+            gatewayOrderId: orderDB.gatewayOrderId,
+            customerDetails,
+            products: orderDB.products.map(p => ({
+                id: p.id,
+                productId: p.productType.product.id,
+                productTypeId: p.productTypeId,
+                quantity: p.quantity,
+                priceAtOrder: p.priceAtOrder,
+                currencyAtOrder: p.currencyAtOrder,
+                productName: p.productType.product.name,
+                typeName: p.productType.name
+            }))
+        };
 
-		return { success: true };
-	}
+        return { order: sendOrder };
+    } catch (err) {
+        console.error('Error processing order:', err);
+        throw error(500, 'Error processing order');
+    }
 };
+
+export const actions = {
+    setStatus: async ({ locals, request }) => {
+        ensureAdmin(locals);
+
+        const data = await request.formData();
+
+        const schema = zfd.formData({
+            orderId: zfd.text(),
+            status: zfd.text()
+        });
+
+        const res = schema.safeParse(data);
+
+        if (!res.success) {
+            throw error(400, res.error.name);
+        }
+
+        if (!isOrderStatus(res.data.status)) {
+            throw error(400, 'invalid status');
+        }
+
+        await db
+            .update(order)
+            .set({
+                status: res.data.status
+            })
+            .where(eq(order.id, res.data.orderId));
+
+        return { success: true };
+    }
+};
+
+function isOrderStatus(status: string): status is 'new' | 'placed' | 'packaged' | 'sent' {
+    return ['new', 'placed', 'packaged', 'sent'].includes(status);
+}
+
+async function fetchPaystackTransaction(transactionId: string): Promise<PaystackTransaction> {
+    try {
+        const response = await paystack.verifyTransaction(transactionId);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching Paystack transaction:', error);
+        throw new Error('Failed to fetch Paystack transaction');
+    }
+}

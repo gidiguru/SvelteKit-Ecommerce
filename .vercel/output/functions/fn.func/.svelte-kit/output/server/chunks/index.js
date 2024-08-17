@@ -53,7 +53,7 @@ const product = pgTable("product", {
 });
 const productRelations = relations(product, ({ many }) => ({
   tags: many(productToProductTag),
-  sizes: many(productSize),
+  sizes: many(productType),
   images: many(productImage),
   reviews: many(productReview)
 }));
@@ -86,7 +86,7 @@ const productTag = pgTable("product_tag", {
 const productTagRelations = relations(productTag, ({ many }) => ({
   products: many(productToProductTag)
 }));
-const productSize = pgTable("product_size", {
+const productType = pgTable("product_type", {
   code: varchar("code", { length: 100 }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull().default("my product"),
   isAvailable: boolean("is_available").notNull().default(true),
@@ -97,9 +97,9 @@ const productSize = pgTable("product_size", {
   stripeProductId: varchar("stripe_product_id", { length: 100 }).notNull(),
   productId: varchar("product_id", { length: 100 }).notNull()
 });
-const productSizeRelations = relations(productSize, ({ one }) => ({
+const productTypeRelations = relations(productType, ({ one }) => ({
   product: one(product, {
-    fields: [productSize.productId],
+    fields: [productType.productId],
     references: [product.id]
   })
 }));
@@ -145,7 +145,7 @@ const orderRelations = relations(order, ({ many }) => ({
 }));
 const orderProduct = pgTable("order_product", {
   id: varchar("id", { length: 20 }).primaryKey(),
-  productSizeCode: varchar("product_size_code", { length: 100 }).notNull(),
+  productTypeCode: varchar("product_type_code", { length: 100 }).notNull(),
   quantity: integer("quantity").notNull(),
   orderId: varchar("order_id", { length: 100 }).notNull()
 });
@@ -168,8 +168,8 @@ const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   productRelations,
   productReview,
   productReviewRelations,
-  productSize,
-  productSizeRelations,
+  productType,
+  productTypeRelations,
   productTag,
   productTagRelations,
   productToProductTag,
@@ -191,7 +191,7 @@ export {
   productImage as c,
   db as d,
   emailList as e,
-  productSize as f,
+  productType as f,
   productReview as g,
   orderProduct as h,
   order as o,

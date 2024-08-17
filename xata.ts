@@ -98,7 +98,7 @@ const tables = [
         defaultValue: null,
       },
       {
-        name: "product_size_code",
+        name: "product_type_code",
         type: "varchar(100)",
         notNull: true,
         unique: false,
@@ -255,7 +255,7 @@ const tables = [
     ],
   },
   {
-    name: "product_size",
+    name: "product_type",
     columns: [
       {
         name: "code",
@@ -470,8 +470,8 @@ export type ProductImageRecord = ProductImage & XataRecord;
 export type ProductReview = InferredTypes["product_review"];
 export type ProductReviewRecord = ProductReview & XataRecord;
 
-export type ProductSize = InferredTypes["product_size"];
-export type ProductSizeRecord = ProductSize & XataRecord;
+export type productType = InferredTypes["product_type"];
+export type productTypeRecord = productType & XataRecord;
 
 export type ProductTag = InferredTypes["product_tag"];
 export type ProductTagRecord = ProductTag & XataRecord;
@@ -492,7 +492,7 @@ export type DatabaseSchema = {
   product: ProductRecord;
   product_image: ProductImageRecord;
   product_review: ProductReviewRecord;
-  product_size: ProductSizeRecord;
+  product_type: productTypeRecord;
   product_tag: ProductTagRecord;
   product_to_product_tag: ProductToProductTagRecord;
   session: SessionRecord;

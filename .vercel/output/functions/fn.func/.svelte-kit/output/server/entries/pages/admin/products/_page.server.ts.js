@@ -1,6 +1,6 @@
 import { e as ensureAdmin } from "../../../../chunks/auth.js";
 import { f as fetchAllProducts } from "../../../../chunks/products.js";
-import { d as db, f as productSize, a as product } from "../../../../chunks/index.js";
+import { d as db, f as productType, a as product } from "../../../../chunks/index.js";
 import { parse } from "csv-parse";
 import { generateId } from "lucia";
 const load = async ({ locals }) => {
@@ -20,7 +20,7 @@ const actions = {
       const entryProductName = entry["Product Name"].split(",")[0] ?? "";
       const productIdx = createdProducts.findIndex((v) => v.name === entryProductName);
       if (productIdx >= 0) {
-        await db.insert(productSize).values({
+        await db.insert(productType).values({
           name: entry["Product Name"].split(",")[1].trim() ?? "",
           price: entry.Amount * 100,
           stripePriceId: entry["Price ID"],
@@ -41,7 +41,7 @@ const actions = {
           name: entryProductName,
           id: nId
         });
-        await db.insert(productSize).values({
+        await db.insert(productType).values({
           width: entry.Width,
           height: entry.Height,
           code: entry.Code,

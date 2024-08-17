@@ -88,7 +88,7 @@ describe('handleStripeWebhook', () => {
       totalPrice: 1000,
     });
     expect(createNewOrderProduct).toHaveBeenCalledWith({
-      productSizeCode: 'PROD123',
+      productTypeCode: 'PROD123',
       quantity: 1,
       status: 'placed',
       orderId: 'cs_test_123',
