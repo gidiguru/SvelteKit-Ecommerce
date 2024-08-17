@@ -15,27 +15,29 @@ import {
 
 export const provider = varchar('provider', {enum: ['google', 'github', 'sgs']});
 export const user = pgTable(
-	'user',
-	{
-		id: varchar('id', { length: 100 }).unique().notNull(),
-		provider: varchar('provider').notNull(),
-		providerId: varchar('provider_id', { length: 255 }).notNull(),
-		firstName: varchar('first_name', { length: 100 }).notNull(),
-		lastName: varchar('last_name', { length: 100 }).notNull(),
-		isAdmin: boolean('is_admin').notNull(),
-		email: varchar('email', { length: 100 }).notNull().unique(),
-		stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique(),
-		paystackCustomerId: varchar('paystack_customer_id', { length: 100 }).unique(),
-		password: varchar('password', { length: 255 }),
-		terms: boolean('terms'),
-		token: varchar('token')
-	},
-	(table) => {
-		return {
-			pk: primaryKey({ columns: [table.provider, table.providerId] })
-		};
-	}
+    'user',
+    {
+        id: varchar('id', { length: 100 }).unique().notNull(),
+        provider: varchar('provider').notNull(),
+        providerId: varchar('provider_id', { length: 255 }).notNull(),
+        firstName: varchar('first_name', { length: 100 }).notNull(),
+        lastName: varchar('last_name', { length: 100 }).notNull(),
+        isAdmin: boolean('is_admin').notNull(),
+        email: varchar('email', { length: 100 }).notNull().unique(),
+        stripeCustomerId: varchar('stripe_customer_id', { length: 100 }).unique(),
+        paystackCustomerId: varchar('paystack_customer_id', { length: 100 }).unique(),
+        password: varchar('password', { length: 255 }),
+        terms: boolean('terms'),
+        token: varchar('token', { length: 255 }).unique(),
+		verified: boolean('verified').default(false).notNull(),
+    },
+    (table) => {
+        return {
+            pk: primaryKey({ columns: [table.provider, table.providerId] }),
+        };
+    }
 );
+
 
 export type NewUser = typeof user.$inferInsert;
 

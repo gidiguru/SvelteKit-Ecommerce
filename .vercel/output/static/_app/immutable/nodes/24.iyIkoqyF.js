@@ -1,0 +1,9 @@
+import{s as H,e as u,a as P,t as y,c as m,b as x,g as q,q as S,d as k,f as _,m as h,i as A,h as o,n as I,j as T}from"../chunks/scheduler.nD82W9v2.js";import{S as z,i as D}from"../chunks/index.yaR_9bqv.js";function j(c){let e,n=c[0].user.email+"",a;return{c(){e=u("p"),a=y(n)},l(s){e=m(s,"P",{});var i=x(e);a=k(i,n),i.forEach(_)},m(s,i){A(s,e,i),o(e,a)},p(s,i){i&1&&n!==(n=s[0].user.email+"")&&T(a,n)},d(s){s&&_(e)}}}function R(c){var E;let e,n,a,s="Confirm Your Email Address",i,p,b,f,g,v,C,t=((E=c[0])==null?void 0:E.user)&&j(c);return{c(){e=u("div"),t&&t.c(),n=P(),a=u("h1"),a.textContent=s,i=P(),p=u("hr"),b=y(`\r
+\r
+	Please check your email account for a message to confirm your email address\r
+	for Techshop. If you did not receive the email,\r
+	`),f=u("a"),g=y("click here"),C=y(" to resend it."),this.h()},l(l){e=m(l,"DIV",{class:!0});var r=x(e);t&&t.l(r),n=q(r),a=m(r,"H1",{"data-svelte-h":!0}),S(a)!=="svelte-i0q2oz"&&(a.textContent=s),i=q(r),p=m(r,"HR",{class:!0}),b=k(r,`\r
+\r
+	Please check your email account for a message to confirm your email address\r
+	for Techshop. If you did not receive the email,\r
+	`),f=m(r,"A",{href:!0,class:!0});var d=x(f);g=k(d,"click here"),d.forEach(_),C=k(r," to resend it."),r.forEach(_),this.h()},h(){h(p,"class","!border-t-2 mt-2 mb-6"),h(f,"href",v="/auth/verify/resend-email-"+c[0].user.token),h(f,"class","hover:underline font-bold"),h(e,"class","flex flex-col h-screen container items-center justify-center")},m(l,r){A(l,e,r),t&&t.m(e,null),o(e,n),o(e,a),o(e,i),o(e,p),o(e,b),o(e,f),o(f,g),o(e,C)},p(l,[r]){var d;(d=l[0])!=null&&d.user?t?t.p(l,r):(t=j(l),t.c(),t.m(e,n)):t&&(t.d(1),t=null),r&1&&v!==(v="/auth/verify/resend-email-"+l[0].user.token)&&h(f,"href",v)},i:I,o:I,d(l){l&&_(e),t&&t.d()}}}function V(c,e,n){let{data:a}=e;return c.$$set=s=>{"data"in s&&n(0,a=s.data)},[a]}class B extends z{constructor(e){super(),D(this,e,V,R,H,{data:0})}}export{B as component};
