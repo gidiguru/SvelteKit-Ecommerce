@@ -70,7 +70,7 @@ export function createEmailHtml(email: string, token: string): string {
         <div class="container">
             <div class="inner-container">
                 <hr class="hr">
-                <h1 style="text-align: center; color: #333;">Tech Shop Password Reset</h1>
+                <h1 style="text-align: center; color: #333;">Synergetics Shop Password Reset</h1>
                 <hr class="hr">
                 
                 <img 

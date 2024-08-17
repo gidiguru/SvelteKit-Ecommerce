@@ -184,7 +184,7 @@ const Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     }
   }
   $$unsubscribe_navigating();
-  return `${$$result.head += `<!-- HEAD_svelte-uyu9vs_START -->${$$result.title = `<title>Tech Shop</title>`, ""}<meta name="description" content="Sediment Art, beauty crystalized and shipped straight to you."><!-- HEAD_svelte-uyu9vs_END -->`, ""} ${validate_component(CldOgImage, "CldOgImage").$$render(
+  return `${$$result.head += `<!-- HEAD_svelte-uyu9vs_START -->${$$result.title = `<title>Synergetics Shop</title>`, ""}<meta name="description" content="Sediment Art, beauty crystalized and shipped straight to you."><!-- HEAD_svelte-uyu9vs_END -->`, ""} ${validate_component(CldOgImage, "CldOgImage").$$render(
     $$result,
     {
       src: "ikbbfslp5lkzzwzghd2h",

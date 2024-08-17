@@ -17,7 +17,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
   $$result.css.add(css);
-  return `${$$result.head += `<!-- HEAD_svelte-12vwun3_START -->${$$result.title = `<title>${escape(data.product.name)} | Tech Shop</title>`, ""}<meta name="description"${add_attribute("content", data.product.desc, 0)}><!-- HEAD_svelte-12vwun3_END -->`, ""} <div class="grow flex flex-col sm:pt-10 w-full"> <div class="w-full flex flex-col justify-center items-center gap-y-2 overflow-hidden sm:hidden"> <div class="w-screen overflow-hidden relative"><div class="overflow-x-auto snap-x snap-mandatory scroll-smooth flex slides w-full svelte-1srnmqy"${add_attribute("this", scrollSection, 0)}>${each(data.product.images, (image) => {
+  return `${$$result.head += `<!-- HEAD_svelte-12vwun3_START -->${$$result.title = `<title>${escape(data.product.name)} | Synergetics Shop</title>`, ""}<meta name="description"${add_attribute("content", data.product.desc, 0)}><!-- HEAD_svelte-12vwun3_END -->`, ""} <div class="grow flex flex-col sm:pt-10 w-full"> <div class="w-full flex flex-col justify-center items-center gap-y-2 overflow-hidden sm:hidden"> <div class="w-screen overflow-hidden relative"><div class="overflow-x-auto snap-x snap-mandatory scroll-smooth flex slides w-full svelte-1srnmqy"${add_attribute("this", scrollSection, 0)}>${each(data.product.images, (image) => {
     return `<div class="snap-start w-full transform origin-center shrink-0">${validate_component(CldImage, "CldImage").$$render(
       $$result,
       {

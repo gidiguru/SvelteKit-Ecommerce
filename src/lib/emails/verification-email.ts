@@ -70,7 +70,7 @@ export function createEmailHtml(name: string): string {
         <div class="container">
             <div class="inner-container">
                 <hr class="hr">
-                <h1 style="text-align: center; color: #333;">Tech Shop Password Reset</h1>
+                <h1 style="text-align: center; color: #333;">Synergetics Shop Password Reset</h1>
                 <hr class="hr">
                 
                 <img 
@@ -96,7 +96,7 @@ export async function sendVerificationEmail(to: string, name: string): Promise<v
     const { data, error } = await resend.emails.send({
       from: 'Jogun <joguno@petraton.com>',
       to: to,
-      subject: 'Verify Your Email for Tech Shop',
+      subject: 'Verify Your Email for Synergetics Shop',
       html: html
     });
 

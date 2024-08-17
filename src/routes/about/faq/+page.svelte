@@ -10,7 +10,7 @@
 
 	<div class="grow px-4">
 		<div class="w-full flex flex-col pt-4 px-2">
-			<h3 class="text-center font-jura text-5xl pb-8">What is the Tech Shop?</h3>
+			<h3 class="text-center font-jura text-5xl pb-8">What is the Synergetics Shop?</h3>
 			<p class="text-center text-lg font-light pb-4">
 				We identify cutting edge technology products that make your life easier.
 			</p>

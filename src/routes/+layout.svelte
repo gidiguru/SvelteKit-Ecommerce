@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>Tech Shop</title>
+	<title>Synergetics Shop</title>
 	<meta
 		name="description"
 		content="Sediment Art, beauty crystalized and shipped straight to you."

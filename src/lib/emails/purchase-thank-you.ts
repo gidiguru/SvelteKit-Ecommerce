@@ -106,7 +106,7 @@ export function createEmailHtml(name: string): string {
 
                 <p class="signature">Best,</p>
                 <p class="signature" style="margin-left: 4px;">Jogun Ogedengbe</p>
-                <p class="signature italic" style="margin-left: 4px;">Tech Shop Team</p>
+                <p class="signature italic" style="margin-left: 4px;">Synergetics Shop Team</p>
             </div>
         </div>
     </body>

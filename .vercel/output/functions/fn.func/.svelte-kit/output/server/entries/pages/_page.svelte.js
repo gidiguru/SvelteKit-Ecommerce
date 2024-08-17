@@ -60,7 +60,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { data } = $$props;
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
-  return `<main class="grow"><div class="w-full relative"><div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2" data-svelte-h="svelte-70b980"><div class="flex flex-row gap-4 items-center"><img${add_attribute("src", MobileLogo, 0)} alt="TechShopNG" class="h-[40px] sm:hidden flex"> <h2 class="sm:text-5xl text-3xl font-jura">Tech Shop</h2></div> <h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4> <a class="uppercase bg-black mt-14 px-7 py-3 font-light" href="/products">shop now</a></div>  <div class="object-cover w-full h-[80vh] hidden sm:flex transition-all ease-in-out duration-300 bg-black"> ${validate_component(CldImage, "CldImage").$$render(
+  return `<main class="grow"><div class="w-full relative"><div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2" data-svelte-h="svelte-70b980"><div class="flex flex-row gap-4 items-center"><img${add_attribute("src", MobileLogo, 0)} alt="TechShopNG" class="h-[40px] sm:hidden flex"> <h2 class="sm:text-5xl text-3xl font-jura">Synergetics Shop</h2></div> <h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4> <a class="uppercase bg-black mt-14 px-7 py-3 font-light" href="/products">shop now</a></div>  <div class="object-cover w-full h-[80vh] hidden sm:flex transition-all ease-in-out duration-300 bg-black"> ${validate_component(CldImage, "CldImage").$$render(
     $$result,
     {
       src: "products/zhmgawwsktqqnwr0upwb",

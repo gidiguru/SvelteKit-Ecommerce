@@ -77,7 +77,7 @@ function createEmailHtml(name) {
                     class="logo"
                 >
                 
-                <p class="text">Welcome to The Tech Shop, ${name}!</p>
+                <p class="text">Welcome to The Synergetics Shop, ${name}!</p>
 
                 <p class="text">
                 Dive into a world of captivating natural art, of rocks expertly photographed that are
@@ -92,7 +92,7 @@ function createEmailHtml(name) {
 
                 <p class="signature">Best,</p>
                 <p class="signature" style="margin-left: 4px;">Jogun Ogedengbe</p>
-                <p class="signature italic" style="margin-left: 4px;">Tech Shop Team</p>
+                <p class="signature italic" style="margin-left: 4px;">Synergetics Shop Team</p>
             </div>
         </div>
     </body>
@@ -106,7 +106,7 @@ async function sendWelcomeEmail(to, name) {
     const { data, error: error2 } = await resend.emails.send({
       from: "Jogun <joguno@petraton.com>",
       to,
-      subject: "Welcome to the Tech Shop",
+      subject: "Welcome to the Synergetics Shop",
       html
     });
     if (error2) {

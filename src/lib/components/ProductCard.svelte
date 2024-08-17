@@ -1,73 +1,84 @@
 <script lang="ts">
-	import { CldImage } from 'svelte-cloudinary';
-	import Button from './ui/button/button.svelte';
-	import { Link } from 'lucide-svelte';
-	import { goto, preloadData, pushState } from '$app/navigation';
-	import { addToCart } from '$lib/client/cart';
-	import * as Drawer from './ui/drawer';
+    import { CldImage } from 'svelte-cloudinary';
+    import Button from './ui/button/button.svelte';
+    import { Link } from 'lucide-svelte';
+    import { goto, preloadData, pushState } from '$app/navigation';
+    import { addToCart } from '$lib/client/cart';
+    import * as Drawer from './ui/drawer';
 
-	export let itemData: {
-		id: string;
-		name: string;
-		desc: string;
-		baseCurrency: string;
-		gradientColorStart: string;
-		gradientColorVia: string;
-		gradientColorStop: string;
-		tags: { name: string; desc: string }[];
-		images: {
-			cloudinaryId: string;
-			width: number;
-			height: number;
-			isVertical: boolean;
-			order: number;
-			isPrimary: boolean;
-		}[];
-	};
+    type ProductType = {
+        name: string;
+        width: number;
+        height: number;
+        code: string;
+        price: number;
+        isAvailable: boolean;
+        currency: string;
+    };
 
-	export let displayMode: 'sm' | 'lg' = 'lg';
+    export let itemData: {
+        id: string;
+        name: string;
+        desc: string;
+        baseCurrency: string;
+        gradientColorStart: string;
+        gradientColorVia: string;
+        gradientColorStop: string;
+        tags: { name: string; desc: string }[];
+        images: {
+            cloudinaryId: string;
+            width: number;
+            height: number;
+            isVertical: boolean;
+            order: number;
+            isPrimary: boolean;
+        }[];
+        types: ProductType[]; // Add this line to include the types property
+    };
 
-	const handleAddedToCart = () => {
-		const el = document.getElementById('added-to-cart')
-		el?.classList.remove('hidden')
-		setTimeout(() => {
-			el?.classList.add('hidden')
-		}, 4000);
-	}
+    export let displayMode: 'sm' | 'lg' = 'lg';
 
-	let selectedSizeIdx = itemData.types.findIndex(type => type.isAvailable);
-	if (selectedSizeIdx === -1) selectedSizeIdx = 0;
+    const handleAddedToCart = () => {
+        const el = document.getElementById('added-to-cart')
+        el?.classList.remove('hidden')
+        setTimeout(() => {
+            el?.classList.add('hidden')
+        }, 4000);
+    }
 
-	const primaryImage = itemData.images.find(img => img.isPrimary) || itemData.images[0];
+    let selectedSizeIdx = itemData.types.findIndex(type => type.isAvailable);
+    if (selectedSizeIdx === -1) selectedSizeIdx = 0;
 
-	function handleAddToCart(typeIndex: number) {
-		const selectedType = itemData.types[typeIndex];
-		addToCart({
-			productId: itemData.id,
-			productName: itemData.name,
-			productImage: primaryImage?.cloudinaryId ?? '',
-			size: {
-				width: selectedType.width,
-				height: selectedType.height,
-				code: selectedType.code,
-				price: selectedType.price
-			},
-			quantity: 1
-		});
-		handleAddedToCart();
-	}
+    const primaryImage = itemData.images.find(img => img.isPrimary) || itemData.images[0];
 
-	async function navigate(e: any) {
-		if (e.metaKey || innerWidth < 640) return;
-		e.preventDefault();
-		const { href } = e.currentTarget;
-		const result = await preloadData(href);
-		if (result.type === 'loaded' && result.status === 200) {
-			pushState(href, { selected: result.data });
-		} else {
-			goto(href);
-		}
-	}
+    function handleAddToCart(typeIndex: number) {
+        const selectedType = itemData.types[typeIndex];
+        addToCart({
+            productId: itemData.id,
+            productName: itemData.name,
+            productImage: primaryImage?.cloudinaryId ?? '',
+            size: {
+                width: selectedType.width,
+                height: selectedType.height,
+                code: selectedType.code,
+                price: selectedType.price
+            },
+            quantity: 1
+        });
+        handleAddedToCart();
+    }
+
+    async function navigate(e: any) {
+        if (e.metaKey || innerWidth < 640) return;
+        e.preventDefault();
+        const { href } = e.currentTarget;
+        const result = await preloadData(href);
+        if (result.type === 'loaded' && result.status === 200) {
+            pushState(href, { selected: result.data });
+        } else {
+            goto(href);
+        }
+    }
 </script>
 
 <!-- Large screen view -->
