@@ -142,18 +142,17 @@
 		<div class="flex flex-row items-left sm:col-span-4 flex-wrap sm:place-content-start px-1">
 			{#each data.products as product}
 				<ProductCard
-					itemData={{
-						id: product.id,
+				itemData={{
 						name: product.name,
-						desc: product.desc,
-						baseCurrency: product.baseCurrency,
-						gradientColorStart: product.gradientColorStart,
-						gradientColorVia: product.gradientColorVia,
-						gradientColorStop: product.gradientColorStop,
-						tags: product.tags.map(tag => ({ name: tag.tagId, desc: '' })),
-						images: product.images,
-					}}
-				/>
+						productId: product.id,
+						cloudinaryId: product.images.length > 0 ? product.images[0].cloudinaryId : null,
+						tags: product.tags.map((tag) => tag.tagId),
+						selectTag: addParam,
+						displayMode: displayMode,
+						productTypes: product.productTypes,
+						description: product.description
+                }}
+            />
 			{/each}
 		</div>
 	{:else}

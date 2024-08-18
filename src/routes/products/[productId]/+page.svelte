@@ -6,6 +6,13 @@
 
 	export let data;
 
+	let selectedSizeIdx = 0;
+	while (
+		selectedSizeIdx < data.product.productTypes.length &&
+		!data.product.productTypes[selectedSizeIdx].isAvailable
+	)
+		selectedSizeIdx++;
+
 	const handleAddedToCart = () => {
 		const el = document.getElementById('added-to-cart');
 		el?.classList.remove('hidden');
@@ -29,7 +36,7 @@
 
 <svelte:head>
 	<title>{data.product.name} | Synergetics Shop</title>
-	<meta name="description" content={data.product.desc} />
+	<meta name="description" content={data.product.description} />
 </svelte:head>
 
 <div class="grow flex flex-col sm:pt-10 w-full">
@@ -61,6 +68,9 @@
 		</div>
 	</div>
 	<!-- DESKTOP -->
+	<div class="flex flex-col items-center gap-y-4 md:w-1/2 m-auto text-center px-3">
+		<h2 class="font-jura text-5xl py-6 text-neutral-800">{data.product.name}</h2>
+	</div>
 	<div class="h-full sm:mx-10 mx-4 sm:grid sm:grid-cols-4 flex flex-col">
 		<div class="col-span-3 p-4 relative h-[85vh] hidden sm:flex">
 			{#each data.product.images as im, i}
@@ -131,7 +141,7 @@
 			>
 				{data.product.name}
 			</div>
-			<div class="text-lg text-gray-500 font-light">{data.product.desc}</div>
+			<div class="text-lg text-gray-500 font-light">{data.product.description}</div>
 			<div>
 				<span
 					class={`text-3xl font-jura text-transparent bg-clip-text`}
@@ -158,13 +168,13 @@
 						productId: data.product.id,
 						productName: data.product.name,
 						productImage: data.product.images[0].cloudinaryId,
-						productType: {width: data.productType.width ?? 0,
-					        height: data.productType.height ?? 0,
-					        code: data.productType.code ?? '',
-					        stripePriceId: data.productType.stripePriceId ?? '',
-					        price: data.productType.price ?? 0
-
-                        },
+						productType: {
+							height: data.product.productTypes[selectedSizeIdx].height || 0,							
+							width: data.product.productTypes[selectedSizeIdx].width || 0,
+							sku: data.product.productTypes[selectedSizeIdx].sku || "sku",
+							stripePriceId: data.product.productTypes[selectedSizeIdx].stripePriceId || "id",
+							price: data.product.productTypes[selectedSizeIdx].price
+						},
 						quantity: 1
 					});
 					handleAddedToCart();
@@ -193,7 +203,7 @@
 			Product Size Width: {data.productType.width} x Height: {data.productType.height}.
 		</p>
 		<p class="text-xl font-bold text-neutral-700">
-			{data.product.desc}
+			{data.product.description}
 		</p>
 		<p class="text-xl font-light text-neutral-700 pb-8">
 			Each piece is made to order. We are just starting out and hope to have you on this journey

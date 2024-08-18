@@ -18,6 +18,9 @@ export const load = async ({ params }) => {
                     tag: true
                 }
             },
+			productTypes: {
+				orderBy: asc(productType.price)
+			}
         }
     });
 

@@ -21,7 +21,7 @@ export const load = async () => {
     // Fetch collections with their associated products and images
     const collections = await db.select({
         tagName: productTag.name,
-        tagDesc: productTag.desc,
+        tagDesc: productTag.description,
         productId: product.id,
         productName: product.name,
         imageCloudinaryId: productImage.cloudinaryId,

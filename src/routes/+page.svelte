@@ -10,7 +10,6 @@
     <div class="w-full relative">
         <div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2">
             <div class="flex flex-row gap-4 items-center bg-black">
-                <img src={MobileLogo} alt="Synergetics" class="h-[40px] sm:hidden flex" />
                 <h2 class="sm:text-5xl text-3xl font-jura">Synergetics Shop</h2>
             </div>
             <h4 class="font-light sm:text-3xl text-xl font-jura bg-black">Cutting the edge of Technology</h4>

@@ -9,7 +9,7 @@ export type TCartEntry = {
 	productType: {
 		width: number;
 		height: number;
-		code: string;
+		sku: string;
 		stripePriceId: string;
 		price: number;
 	};
@@ -26,7 +26,7 @@ export const addToCart = (data: TCartEntry) => {
 	if (cur) {
 		const items = JSON.parse(cur) as TCartEntry[];
 		// check if the item is already in the cart
-		const curIdx = items.findIndex((c) => c.productType.code === data.productType.code);
+		const curIdx = items.findIndex((c) => c.productType.sku === data.productType.sku);
 		if (curIdx >= 0) {
 			items[curIdx].quantity += 1;
 		} else {

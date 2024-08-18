@@ -42,7 +42,8 @@ export const user = pgTable(
 export type NewUser = typeof user.$inferInsert;
 
 export const userRelations = relations(user, ({ many }) => ({
-	sessions: many(session)
+	sessions: many(session),
+	reviews: many(productReview)
 }));
 
 export const session = pgTable('session', {
@@ -68,7 +69,9 @@ export const emailList = pgTable('email_list', {
 export const product = pgTable('product', {
 	id: varchar('id', { length: 100 }).primaryKey(),
 	name: varchar('name', { length: 100 }).notNull(),
-	desc: text('desc').notNull(),
+	description: text('description').notNull(),
+	category: varchar('category', { length: 100 }).notNull(),
+	brand: varchar('brand', { length: 100 }).notNull(),
 	baseCurrency: varchar('base_currency', { length: 3 }).notNull().default('USD'),
 	gradientColorStart: varchar('gradient_color_start', { length: 20 })
 		.notNull()
@@ -85,15 +88,20 @@ export const product = pgTable('product', {
 export const productType = pgTable('product_type', {
     productId: varchar('product_id', { length: 100 }).notNull(),
     name: varchar('name', { length: 255 }),
-    code: varchar('code', { length: 100 }),
+    sku: varchar('sku', { length: 100 }),
     isAvailable: boolean('is_available').notNull().default(true),
     width: integer('width'),
     height: integer('height'),
     weight: integer('weight'),
+	rating: integer('rating'),
     price: integer('price').notNull(),
+	discountPercentage: integer('discount_percentage'),
 	stripePriceId: varchar('stripe_price_id', { length: 100 }).unique(),
+	stock: integer('stock'),
 	stripeProductId: varchar('stripe_product_id', { length: 100 }).unique(),
-    currency: varchar('currency', { length: 3 }).notNull().default('NGN'),
+	paystackPlanId: varchar('paystack_plan_id', { length: 100 }).unique(),
+	paystackProductId: varchar('paystack_product_id', { length: 100 }).unique(),
+    currency: varchar('currency', { length: 3 }).notNull().default('USD'),
 });
 
 export const productTypeRelations = relations(productType, ({ one }) => ({
@@ -119,9 +127,11 @@ export const paymentGatewayProductRelations = relations(paymentGatewayProduct, (
 
 
 export const productRelations = relations(product, ({ many }) => ({
+	productTypes: many(productType),
 	tags: many(productToProductTag),
 	images: many(productImage),
-	reviews: many(productReview)
+	reviews: many(productReview),
+
 }));
 
 export const productToProductTag = pgTable(
@@ -150,7 +160,7 @@ export const productToProductTagRelations = relations(productToProductTag, ({ on
 
 export const productTag = pgTable('product_tag', {
 	name: varchar('name', { length: 100 }).primaryKey(),
-	desc: text('desc').notNull()
+	description: text('desc').notNull()
 });
 
 export const productTagRelations = relations(productTag, ({ many }) => ({
@@ -177,16 +187,23 @@ export const productImageRelations = relations(productImage, ({ one }) => ({
 export const productReview = pgTable('product_review', {
 	id: varchar('id', { length: 100 }).primaryKey(),
 	rating: integer('rating').notNull(),
-	reviewText: text('review_text'),
+	comment: text('comment'),
+	userId: varchar('user_id', { length: 100 }).notNull(),
 	productId: varchar('product_id', { length: 100 }),
-	timestamp: timestamp('timestamp').$defaultFn(() => new Date())
+	timestamp: timestamp('timestamp').$defaultFn(() => new Date()),
+	reviewerName: varchar('reviewer_name', { length: 100 }).notNull(),
+	reviewerEmail: varchar('reviewer_email', { length: 100 }).notNull(),
 });
 
 export const productReviewRelations = relations(productReview, ({ one }) => ({
 	product: one(product, {
 		fields: [productReview.productId],
 		references: [product.id]
-	})
+	}),
+	user: one(user, { // Add this relation
+        fields: [productReview.userId],
+        references: [user.id]
+    })
 }));
 
 

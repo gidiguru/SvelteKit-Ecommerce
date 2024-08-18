@@ -49,16 +49,19 @@ const seed = async () => {
     const products = [
         {
             name: 'Ugreen PowerRoam 1200W 1024Wh LiFePO4 Battery Backup Solar Generator',
-            desc: '1200W AC Output, up to 2500W w/ U-Turbo50 Minutes 0 to 80% Battery13 Ports for Any Power NeedEasy App Control5-Year Full-Device Warranty',
+            description: '1200W AC Output, up to 2500W w/ U-Turbo50 Minutes 0 to 80% Battery13 Ports for Any Power NeedEasy App Control5-Year Full-Device Warranty',
             // can be whatever
             id: 'Ugreen_PowerRoam_1200W',
+            category: 'Power Stations',
+            brand: 'UGreen'
 
         },
         {
             name: 'Ugreen 6-in-1 4K HDMI USB C Hub',
-            desc: 'UGREEN Premium 6-in-1 USB C Hub Conveniently adds more connections to your laptop, easily switch between your devices. Mirror or extend your screen with USB C to USB adapters HDMI port and directly stream 4K@30Hz UHD or full HD 1080P video to HDTV.',
+            description: 'UGREEN Premium 6-in-1 USB C Hub Conveniently adds more connections to your laptop, easily switch between your devices. Mirror or extend your screen with USB C to USB adapters HDMI port and directly stream 4K@30Hz UHD or full HD 1080P video to HDTV.',
             id: 'Ugreen-6-in-1-4K-USB-C-Hub',
-
+            category: 'Hubs',
+            brand: 'UGreen',
         }
     ];
 
@@ -73,7 +76,7 @@ const seed = async () => {
         {
             code: 'first_12_12',
             price: 99900,
-            productId: 'Ugreen_PowerRoam_1200W'
+            productId: 'Ugreen_PowerRoam_1200W',
         },
 
         {
@@ -125,11 +128,11 @@ const seed = async () => {
     const productTags = [
         {
             name: 'Power-Station',
-            desc: 'Portable Power Supplies...'
+            description: 'Portable Power Supplies...'
         },
         {
             name: 'Hubs',
-            desc: 'Connections to devices'
+            description: 'Connections to devices'
         }
     ];
 
