@@ -18,6 +18,7 @@ const config = {
         }),
         // You can add more kit options here
         alias: {
+            $lib: 'src/lib',
             $components: 'src/lib/components',
             $utils: 'src/lib/utils'
         },
