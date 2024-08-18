@@ -1,5 +1,5 @@
 import { c as create_ssr_component, v as validate_component, e as escape, f as each, a as add_attribute } from "../../chunks/ssr.js";
-import { M as MobileLogo } from "../../chunks/techshopng-logo.js";
+import { M as MobileLogo } from "../../chunks/sgs-logo.js";
 import { j as null_to_empty } from "../../chunks/lifecycle.js";
 import { C as CldImage } from "../../chunks/CldImage.js";
 import "../../chunks/analytics.js";
@@ -22,11 +22,17 @@ const ImageCollection = create_ssr_component(($$result, $$props, $$bindings, slo
   if ($$props.collectionData === void 0 && $$bindings.collectionData && collectionData !== void 0)
     $$bindings.collectionData(collectionData);
   $$result.css.add(css);
+  {
+    {
+      console.log("Collection data changed:", collectionData);
+    }
+  }
   return `<div class="${"flex flex-col " + escape(
     collectionData.dark ? "bg-gray-950 text-white" : "bg-neutral-100 text-black",
     true
   ) + " px-2 sm:px-4 pt-6 pb-4 sm:py-10 sm:items-center"}"><div><span class="font-jura sm:text-4xl text-3xl">${escape(collectionData.name)}.</span> <span class="font-jura sm:text-3xl text-2xl">${escape(collectionData.tagLine)}.</span></div> <a href="${"/products?tag=" + escape(collectionData.collectionTag, true)}" class="pb-4 sm:pb-8 flex flex-row items-center"><span class="font-jura sm:text-xl text-lg opacity-60" data-svelte-h="svelte-fwj7xy">Shop collection</span> ${validate_component(ChevronRight, "ChevronRight").$$render($$result, { class: "opacity-60" }, {}, {})}</a> <div class="flex flex-row w-full sm:overflow-x-hidden flex-wrap gap-2 sm:justify-center">${each(collectionData.productInfo.sort((a, b) => a.name.localeCompare(b.name)), (product) => {
-    return `<a${add_attribute("href", product.link, 0)} class="flex flex-col lg:w-[22%] md:w-[30%] sm:w-[40%] w-full sm:p-3 rounded-md cursor-pointer"><div class="productImg relative svelte-8dz69"><div>${validate_component(CldImage, "CldImage").$$render(
+    let productLog = `Product: ${product.name}, Available sizes: ${product.availableSizes.join(", ")}, Sold out sizes: ${product.soldOutSizes.join(", ")}`;
+    return ` ${escape(console.log(productLog))} <a${add_attribute("href", product.link, 0)} class="flex flex-col lg:w-[22%] md:w-[30%] sm:w-[40%] w-full sm:p-3 rounded-md cursor-pointer"><div class="productImg relative svelte-8dz69"><div>${validate_component(CldImage, "CldImage").$$render(
       $$result,
       {
         width: 350 * 2,
@@ -61,7 +67,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let { data } = $$props;
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
-  return `<main class="grow"><div class="w-full relative"><div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2" data-svelte-h="svelte-4go1c3"><div class="flex flex-row gap-4 items-center"><img${add_attribute("src", MobileLogo, 0)} alt="TechShopNG" class="h-[40px] sm:hidden flex"> <h2 class="sm:text-5xl text-3xl font-jura">Synergetics Shop</h2></div> <h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4> <a class="uppercase bg-black mt-14 px-7 py-3 font-light" href="/products" aria-label="Shop now for the latest tech products">shop now</a></div> ${validate_component(CldImage, "CldImage").$$render(
+  return `<main class="grow"><div class="w-full relative"><div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2" data-svelte-h="svelte-15q5j7y"><div class="flex flex-row gap-4 items-center bg-black"><img${add_attribute("src", MobileLogo, 0)} alt="Synergetics" class="h-[40px] sm:hidden flex"> <h2 class="sm:text-5xl text-3xl font-jura">Synergetics Shop</h2></div> <h4 class="font-light sm:text-3xl text-xl font-jura bg-black">Cutting the edge of Technology</h4> <a class="uppercase bg-black mt-14 px-7 py-3 font-light" href="/products" aria-label="Shop now for the latest tech products">shop now</a></div> ${validate_component(CldImage, "CldImage").$$render(
     $$result,
     {
       src: "cld-sample-2",

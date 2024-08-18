@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { CldImage } from 'svelte-cloudinary';
 	import { ChevronRight } from 'lucide-svelte';
+	import { onMount } from 'svelte';
 
 	export let collectionData: {
 		name: string;
@@ -16,6 +17,18 @@
 		dark: boolean;
 		collectionTag: string;
 	};
+
+	onMount(() => {
+		console.log('Component mounted. Collection data:', collectionData);
+	});
+
+	$: {
+		console.log('Collection data changed:', collectionData);
+	}
+
+	function handleProductClick(productName: string) {
+		console.log('Product clicked:', productName);
+	}
 </script>
 
 <div
@@ -30,6 +43,7 @@
 	<a
 		href="/products?tag={collectionData.collectionTag}"
 		class="pb-4 sm:pb-8 flex flex-row items-center"
+		on:click={() => console.log('Shop collection clicked')}
 	>
 		<span class="font-jura sm:text-xl text-lg opacity-60">Shop collection</span>
 		<ChevronRight class="opacity-60" />
@@ -37,9 +51,12 @@
 
 	<div class="flex flex-row w-full sm:overflow-x-hidden flex-wrap gap-2 sm:justify-center">
 		{#each collectionData.productInfo.sort((a, b) => a.name.localeCompare(b.name)) as product}
+			{@const productLog = `Product: ${product.name}, Available sizes: ${product.availableSizes.join(', ')}, Sold out sizes: ${product.soldOutSizes.join(', ')}`}
+			{console.log(productLog)}
 			<a
 				href={product.link}
 				class="flex flex-col lg:w-[22%] md:w-[30%] sm:w-[40%] w-full sm:p-3 rounded-md cursor-pointer"
+				on:click={() => handleProductClick(product.name)}
 			>
 				<div class="productImg relative">
 					<div>

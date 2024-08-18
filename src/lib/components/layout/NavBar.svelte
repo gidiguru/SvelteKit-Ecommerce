@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import Logo from '$lib/client/images/techshopng-logo.jpg';
-	import MobileLogo from '$lib/client/images/techshopng-logo.jpg';
+	import Logo from '$lib/client/images/sgs-logo.png';
+	import MobileLogo from '$lib/client/images/sgs-logo.png';
 	import { CldImage } from 'svelte-cloudinary';
 	import { cartLengthStore } from '$lib/client/cart';
 	export let user: {

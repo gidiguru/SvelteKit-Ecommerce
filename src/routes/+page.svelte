@@ -1,5 +1,5 @@
 <script lang="ts">
-    import MobileLogo from '$lib/client/images/techshopng-logo.jpg';
+    import MobileLogo from '$lib/client/images/sgs-logo.png';
     import ImageCollection from '$lib/components/ImageCollection.svelte';
     import { CldImage } from 'svelte-cloudinary';
 
@@ -9,11 +9,11 @@
 <main class="grow">
     <div class="w-full relative">
         <div class="z-10 absolute top-[40%] left-0 text-white w-full flex justify-center items-center flex-col gap-y-2">
-            <div class="flex flex-row gap-4 items-center">
-                <img src={MobileLogo} alt="TechShopNG" class="h-[40px] sm:hidden flex" />
+            <div class="flex flex-row gap-4 items-center bg-black">
+                <img src={MobileLogo} alt="Synergetics" class="h-[40px] sm:hidden flex" />
                 <h2 class="sm:text-5xl text-3xl font-jura">Synergetics Shop</h2>
             </div>
-            <h4 class="font-light sm:text-3xl text-xl font-jura">Cutting the edge of Technology</h4>
+            <h4 class="font-light sm:text-3xl text-xl font-jura bg-black">Cutting the edge of Technology</h4>
             <a class="uppercase bg-black mt-14 px-7 py-3 font-light" href="/products" aria-label="Shop now for the latest tech products">
                 shop now
             </a>
