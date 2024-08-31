@@ -20,7 +20,7 @@ const actions = {
     await db.insert(product).values({
       id: productId,
       name: res.data.name,
-      desc: res.data.desc
+      description: res.data.description
     });
     redirect(300, `/admin/products/${productId}/sizes`);
   }

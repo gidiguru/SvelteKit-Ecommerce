@@ -1,5 +1,6 @@
-import { c as create_ssr_component, s as spread, d as escape_object, v as validate_component, b as escape_attribute_value, e as escape, a as add_attribute, f as each } from "../../../chunks/ssr.js";
+import { c as create_ssr_component, s as spread, d as escape_object, v as validate_component, b as escape_attribute_value, e as escape, f as each } from "../../../chunks/ssr.js";
 import { g as getCart } from "../../../chunks/cart.js";
+import "../../../chunks/client.js";
 import { C as CldImage } from "../../../chunks/CldImage.js";
 import "../../../chunks/analytics.js";
 import { B as Button } from "../../../chunks/index6.js";
@@ -59,21 +60,6 @@ const Dialog_portal = create_ssr_component(($$result, $$props, $$bindings, slots
       return `${slots.default ? slots.default({}) : ``}`;
     }
   })}`;
-});
-const Dialog_footer = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let $$restProps = compute_rest_props($$props, ["class"]);
-  let { class: className = void 0 } = $$props;
-  if ($$props.class === void 0 && $$bindings.class && className !== void 0)
-    $$bindings.class(className);
-  return `<div${spread(
-    [
-      {
-        class: escape_attribute_value(cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className))
-      },
-      escape_object($$restProps)
-    ],
-    {}
-  )}>${slots.default ? slots.default({}) : ``}</div>`;
 });
 const Dialog_header = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$restProps = compute_rest_props($$props, ["class"]);
@@ -185,29 +171,16 @@ const Dialog_description = create_ssr_component(($$result, $$props, $$bindings, 
 });
 const Root = Dialog;
 const Trigger = DialogTrigger;
-function formatPrice(price) {
-  return (price / 100).toFixed(2);
-}
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let cart;
+  let total;
   let { data } = $$props;
-  let cart = [];
-  let total = 0;
-  let paymentGateway = "stripe";
-  function calculateTotal() {
-    total = cart.reduce((sum, item) => sum + item.productType.price * item.quantity, 0);
-    console.log("Total calculated:", total);
-  }
   if ($$props.data === void 0 && $$bindings.data && data !== void 0)
     $$bindings.data(data);
-  {
-    {
-      cart = getCart();
-      console.log("Updated cart:", cart);
-      calculateTotal();
-    }
-  }
-  return `<div class="w-full flex md:px-20 md:py-4 md:gap-x-16 bg-white flex-col gap-3 px-2 grow"><h1 class="md:text-4xl text-3xl font-semibold text-black" data-svelte-h="svelte-1lnjbd">Review Shopping Cart</h1> ${total < 12500 ? `<p class="text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-1d2tx3i">All orders over $125.00 will receive free shipping!</p>` : `<p class="flex flex-row items-center gap-1 text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-fvgerm"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="green"></path></svg>
-			Your order qualifies for <span class="text-green-600">FREE shipping!</span></p>`} <div class="flex flex-row justify-center items-center sm:justify-end sm:top-[77px] w-full sticky top-[62px] bg-white p-3"><p class="text-xl font-light text-neutral-600 px-3">Subtotal <span class="text-xl font-semibold text-black">$${escape(formatPrice(total))}</span></p> <form><input type="hidden" name="cart"${add_attribute("value", JSON.stringify(cart), 0)}> <input type="hidden" name="paymentGateway"${add_attribute("value", paymentGateway, 0)}> ${data.isSoldOut ? `${validate_component(Button, "Button").$$render($$result, { type: "submit", disabled: true }, {}, {
+  cart = getCart();
+  total = cart.length > 0 ? cart.reduce((sum, item) => sum + item.productType.price * item.quantity, 0) / 100 : 0;
+  return `<div class="w-full flex md:px-20 md:py-4 md:gap-x-16 bg-white flex-col gap-3 px-2 grow"><div class="md:text-4xl text-3xl font-semibold text-black" data-svelte-h="svelte-sucyab">Review Shopping Cart</div> ${total < 125 ? `<div class="flex flex-row items-center gap-1 text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-jf21tx"><div>All orders over $125.00 will receive free shipping!</div></div>` : `<div class="flex flex-row items-center gap-1 text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-glm5gr"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="green"></path></svg> <div>Your order qualifies for <span class="text-green-600">FREE shipping!</span></div></div>`} ${cart.find((el) => el.productType.width >= 11) != void 0 ? `<div class="flex flex-row gap-1 items-center text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-1r2510l"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="green"></path></svg> <div><span class="text-green-600">Your order qualifies</span> for an exclusive FREE print</div></div>` : `<div class="flex flex-row items-center gap-1 text-neutral-500 md:text-2xl sm:text-xl sm:font-light" data-svelte-h="svelte-thxuf0">All orders which include a Medium print (11x14 or 11x11) will include an exclusive free print,
+			add one now!</div>`} <div class="flex flex-row justify-center items-center sm:justify-end sm:top-[77px] w-full sticky top-[62px] bg-white p-3"><div class="text-xl font-light text-neutral-600 px-3">Subtotal <span class="text-xl font-semibold text-black">$${escape(cart.length > 0 ? (cart.reduce((sum, el) => sum + el.productType.price * el.quantity, 0) / 100).toFixed(2) : "0.00")}</span></div> <form method="POST">${data.isSoldOut ? `${validate_component(Button, "Button").$$render($$result, { type: "submit", disabled: true }, {}, {
     default: () => {
       return `Sold out`;
     }
@@ -215,7 +188,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$result,
     {
       type: "submit",
-      disabled: cart.length === 0,
+      disabled: cart.length == 0,
       class: "bg-[#0071e3] drop-shadow-sm hover:bg-neutral-900 text-lg p-6 font-light rounded-lg"
     },
     {},
@@ -224,21 +197,21 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         return `${escape(cart.length > 0 ? `Check Out (${cart.length} item${cart.length === 1 ? "" : "s"})` : "Please pick an item first")}`;
       }
     }
-  )}` : `${cart.length === 0 ? `${validate_component(Button, "Button").$$render(
+  )}` : `${cart.length == 0 ? `${validate_component(Button, "Button").$$render(
     $$result,
     {
-      disabled: true,
+      disabled: cart.length == 0,
       class: "bg-[#0071e3] drop-shadow-sm hover:bg-neutral-900 text-lg p-6 font-light rounded-lg"
     },
     {},
     {
       default: () => {
-        return `Please pick an item first`;
+        return `${escape(cart.length > 0 ? `Check Out (${cart.length} items)` : "Please pick an item first")}`;
       }
     }
   )}` : `${validate_component(Root, "Dialog.Root").$$render($$result, {}, {}, {
     default: () => {
-      return `${validate_component(Trigger, "Dialog.Trigger").$$render($$result, { asChild: true }, {}, {
+      return `${validate_component(Trigger, "Dialog.Trigger").$$render($$result, {}, {}, {
         default: () => {
           return `${validate_component(Button, "Button").$$render(
             $$result,
@@ -248,7 +221,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
             {},
             {
               default: () => {
-                return `Check Out (${escape(cart.length)} item${escape(cart.length === 1 ? "" : "s")})`;
+                return `${escape(cart.length > 0 ? `Check Out (${cart.length} item${cart.length == 1 ? "" : "s"})` : "Please pick an item first")}`;
               }
             }
           )}`;
@@ -259,35 +232,37 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
             default: () => {
               return `${validate_component(Dialog_title, "Dialog.Title").$$render($$result, {}, {}, {
                 default: () => {
-                  return `Payment Method`;
+                  return `Account`;
                 }
               })} ${validate_component(Dialog_description, "Dialog.Description").$$render($$result, {}, {}, {
                 default: () => {
-                  return `Choose your preferred payment method:`;
+                  return `Would you like to create an account to save your information, manage your orders,
+								and get special offers?`;
                 }
               })}`;
             }
-          })} <div class="flex flex-col gap-4">${validate_component(Button, "Button").$$render($$result, { class: "w-full" }, {}, {
+          })} <form class="flex flex-row justify-center gap-x-5 w-full" method="post">${validate_component(Button, "Button").$$render($$result, { type: "submit", class: "w-full" }, {}, {
             default: () => {
-              return `Pay with Stripe`;
+              return `Continue as guest`;
             }
-          })} ${validate_component(Button, "Button").$$render($$result, { class: "w-full" }, {}, {
-            default: () => {
-              return `Pay with Paystack`;
+          })}</form> ${validate_component(Button, "Button").$$render(
+            $$result,
+            {
+              type: "button",
+              class: "w-full",
+              variant: "outline"
+            },
+            {},
+            {
+              default: () => {
+                return `Create account`;
+              }
             }
-          })}</div> ${validate_component(Dialog_footer, "Dialog.Footer").$$render($$result, {}, {}, {
-            default: () => {
-              return `${validate_component(Button, "Button").$$render($$result, { variant: "outline" }, {}, {
-                default: () => {
-                  return `Cancel`;
-                }
-              })}`;
-            }
-          })}`;
+          )}`;
         }
       })}`;
     }
-  })}`}`}`}</form></div> <hr class="bg-neutral-300 h-[1px] w-full"> <div class="md:rounded-lg"><div class="flex flex-col md:flex-row flex-wrap">${each(cart, (cartItem, i) => {
+  })}`}`}`}</form></div> <div class="bg-neutral-300 h-[1px] w-full"></div> <div class="md:rounded-lg"><div class="flex flex-col md:flex-row flex-wrap">${each(cart, (cartItem, i) => {
     return `<div class="w-full md:mx-auto py-2 justify-center flex flex-row gap-2 md:gap-10 p-2"><div class="w-1/2 md:w-[200px] rounded-lg overflow-hidden h-full">${validate_component(CldImage, "CldImage").$$render(
       $$result,
       {
@@ -298,11 +273,11 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       },
       {},
       {}
-    )}</div> <div class="flex flex-col gap-1 sm:gap-3 w-1/2"><div class="flex flex-col sm:flex-row sm:items-center justify-between"><h2 class="text-2xl md:text-4xl font-jura">${escape(cartItem.productName)}</h2> <p class="text-xl font-bold">$${escape(formatPrice(cartItem.productType.price * cartItem.quantity))} </p></div> <p class="text-xl text-neutral-600">${escape(cartItem.productType.width)}&quot; x ${escape(cartItem.productType.height)}&quot;</p> <div class="flex flex-row items-center gap-3">${validate_component(Button, "Button").$$render(
+    )}</div> <div class="flex flex-col gap-1 sm:gap-3 w-1/2"><div class="flex flex-col sm:flex-row sm:items-center justify-between"><div class="text-2xl md:text-4xl font-jura">${escape(cartItem.productName)}</div> <div class="text-xl font-bold">$${escape((cartItem.productType.price * cartItem.quantity / 100).toFixed(2))} </div></div> <div class="text-xl text-neutral-600">${escape(cartItem.productType.width)}&quot; x ${escape(cartItem.productType.height)}&quot;</div> <div class="flex flex-row items-center gap-3">${validate_component(Button, "Button").$$render(
       $$result,
       {
         variant: "outline",
-        disabled: cartItem.quantity === 1
+        disabled: cartItem.quantity == 1
       },
       {},
       {
@@ -314,7 +289,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       default: () => {
         return `+`;
       }
-    })}</div> <button class="text-blue-600 text-left" data-svelte-h="svelte-1c0c8da">Remove</button> </div></div> <hr class="bg-neutral-300 h-[1px] w-2/3 mx-auto">`;
+    })}</div> <button class="text-blue-600 text-left" data-svelte-h="svelte-1c0c8da">Remove</button>  </div></div> <div class="bg-neutral-300 h-[1px] w-2/3 mx-auto"></div>`;
   })}</div></div></div>`;
 });
 export {

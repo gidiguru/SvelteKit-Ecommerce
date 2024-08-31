@@ -19,7 +19,7 @@ const actions = {
     if (!res.success) {
       error(400, res.error.name);
     }
-    await db.delete(productType).where(eq(productType.code, res.data.code));
+    await db.delete(productType).where(eq(productType.sku, res.data.code));
     return { success: true };
   },
   edit: async ({ locals, request }) => {
@@ -43,7 +43,7 @@ const actions = {
       price: res.data.price,
       stripePriceId: res.data.stripePriceId,
       stripeProductId: res.data.stripeProductId
-    }).where(eq(productType.code, res.data.code));
+    }).where(eq(productType.sku, res.data.code));
     return { success: true };
   },
   create: async ({ locals, request, params }) => {

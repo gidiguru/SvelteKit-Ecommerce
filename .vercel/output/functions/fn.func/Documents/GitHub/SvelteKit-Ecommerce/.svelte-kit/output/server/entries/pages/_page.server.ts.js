@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 const load = async () => {
   const collections = await db.select({
     tagName: productTag.name,
-    tagDesc: productTag.desc,
+    tagDesc: productTag.description,
     productId: product.id,
     productName: product.name,
     imageCloudinaryId: productImage.cloudinaryId,

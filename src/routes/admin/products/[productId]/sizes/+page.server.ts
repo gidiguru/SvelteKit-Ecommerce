@@ -32,7 +32,7 @@ export const actions = {
 			error(400, res.error.name);
 		}
 
-		await db.delete(productType).where(eq(productType.code, res.data.code));
+		await db.delete(productType).where(eq(productType.sku, res.data.code));
 
 		return { success: true };
 	},
@@ -66,7 +66,7 @@ export const actions = {
 				stripePriceId: res.data.stripePriceId,
 				stripeProductId: res.data.stripeProductId
 			})
-			.where(eq(productType.code, res.data.code));
+			.where(eq(productType.sku, res.data.code));
 
 		return { success: true };
 	},

@@ -1,6 +1,6 @@
 {
 	"runtime": "nodejs20.x",
-	"handler": "..\\..\\..\\Users\\Jogun\\Documents\\GitHub\\SvelteKit-Ecommerce\\.svelte-kit\\vercel-tmp\\index.js",
+	"handler": "..\\..\\..\\Users\\Lenovo\\Documents\\GitHub\\SvelteKit-Ecommerce\\.svelte-kit\\vercel-tmp\\index.js",
 	"launcherType": "Nodejs",
 	"experimentalResponseStreaming": true
 }

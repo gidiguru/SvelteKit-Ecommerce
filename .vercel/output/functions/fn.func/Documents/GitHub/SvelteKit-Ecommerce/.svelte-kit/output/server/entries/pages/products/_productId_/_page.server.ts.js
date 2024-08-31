@@ -1,6 +1,6 @@
 import { d as db, b as product, g as productImage, f as productType } from "../../../../chunks/index.js";
 import { e as error } from "../../../../chunks/index2.js";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, asc } from "drizzle-orm";
 const load = async ({ params }) => {
   console.log(`Loading product with ID: ${params.productId}`);
   const firstProduct = await db.query.product.findFirst({
@@ -14,6 +14,9 @@ const load = async ({ params }) => {
         with: {
           tag: true
         }
+      },
+      productTypes: {
+        orderBy: asc(productType.price)
       }
     }
   });

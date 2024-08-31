@@ -1,7 +1,6 @@
 import { s as subscribe, j as null_to_empty, h as compute_rest_props } from "../../chunks/lifecycle.js";
 import { c as create_ssr_component, a as add_attribute, e as escape, f as each, v as validate_component, s as spread, b as escape_attribute_value, d as escape_object } from "../../chunks/ssr.js";
 import { B as Button } from "../../chunks/index6.js";
-import { M as MobileLogo } from "../../chunks/sgs-logo.js";
 import "../../chunks/analytics.js";
 import { c as cartLengthStore } from "../../chunks/cart.js";
 import { I as Icon } from "../../chunks/Icon.js";
@@ -12,6 +11,7 @@ import "../../chunks/index4.js";
 import { A as Alert, a as Alert_description } from "../../chunks/alert-description.js";
 import { i as is_void } from "../../chunks/names.js";
 import { a as cn } from "../../chunks/utils.js";
+const MobileLogo = "/_app/immutable/assets/sgs-logo.JI-JEBJ3.png";
 const OG_IMAGE_WIDTH = 2400;
 const OG_IMAGE_WIDTH_RESIZE = 1200;
 const OG_IMAGE_HEIGHT = 1254;

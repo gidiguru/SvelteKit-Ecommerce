@@ -28,7 +28,8 @@ const user = pgTable(
   }
 );
 const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session)
+  sessions: many(session),
+  reviews: many(productReview)
 }));
 const session = pgTable("session", {
   id: varchar("id", { length: 100 }).primaryKey(),
@@ -50,7 +51,9 @@ const emailList = pgTable("email_list", {
 const product = pgTable("product", {
   id: varchar("id", { length: 100 }).primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
-  desc: text("desc").notNull(),
+  description: text("description").notNull(),
+  category: varchar("category", { length: 100 }).notNull(),
+  brand: varchar("brand", { length: 100 }).notNull(),
   baseCurrency: varchar("base_currency", { length: 3 }).notNull().default("USD"),
   gradientColorStart: varchar("gradient_color_start", { length: 20 }).notNull().default("from-red-600"),
   gradientColorVia: varchar("gradient_color_via", { length: 20 }).notNull().default("via-purple-500"),
@@ -59,15 +62,20 @@ const product = pgTable("product", {
 const productType = pgTable("product_type", {
   productId: varchar("product_id", { length: 100 }).notNull(),
   name: varchar("name", { length: 255 }),
-  code: varchar("code", { length: 100 }),
+  sku: varchar("sku", { length: 100 }),
   isAvailable: boolean("is_available").notNull().default(true),
   width: integer("width"),
   height: integer("height"),
   weight: integer("weight"),
+  rating: integer("rating"),
   price: integer("price").notNull(),
+  discountPercentage: integer("discount_percentage"),
   stripePriceId: varchar("stripe_price_id", { length: 100 }).unique(),
+  stock: integer("stock"),
   stripeProductId: varchar("stripe_product_id", { length: 100 }).unique(),
-  currency: varchar("currency", { length: 3 }).notNull().default("NGN")
+  paystackPlanId: varchar("paystack_plan_id", { length: 100 }).unique(),
+  paystackProductId: varchar("paystack_product_id", { length: 100 }).unique(),
+  currency: varchar("currency", { length: 3 }).notNull().default("USD")
 });
 const productTypeRelations = relations(productType, ({ one }) => ({
   product: one(product, {
@@ -89,6 +97,7 @@ const paymentGatewayProductRelations = relations(paymentGatewayProduct, ({ one }
   })
 }));
 const productRelations = relations(product, ({ many }) => ({
+  productTypes: many(productType),
   tags: many(productToProductTag),
   images: many(productImage),
   reviews: many(productReview)
@@ -117,7 +126,7 @@ const productToProductTagRelations = relations(productToProductTag, ({ one }) =>
 }));
 const productTag = pgTable("product_tag", {
   name: varchar("name", { length: 100 }).primaryKey(),
-  desc: text("desc").notNull()
+  description: text("desc").notNull()
 });
 const productTagRelations = relations(productTag, ({ many }) => ({
   products: many(productToProductTag)
@@ -140,14 +149,22 @@ const productImageRelations = relations(productImage, ({ one }) => ({
 const productReview = pgTable("product_review", {
   id: varchar("id", { length: 100 }).primaryKey(),
   rating: integer("rating").notNull(),
-  reviewText: text("review_text"),
+  comment: text("comment"),
+  userId: varchar("user_id", { length: 100 }).notNull(),
   productId: varchar("product_id", { length: 100 }),
-  timestamp: timestamp("timestamp").$defaultFn(() => /* @__PURE__ */ new Date())
+  timestamp: timestamp("timestamp").$defaultFn(() => /* @__PURE__ */ new Date()),
+  reviewerName: varchar("reviewer_name", { length: 100 }).notNull(),
+  reviewerEmail: varchar("reviewer_email", { length: 100 }).notNull()
 });
 const productReviewRelations = relations(productReview, ({ one }) => ({
   product: one(product, {
     fields: [productReview.productId],
     references: [product.id]
+  }),
+  user: one(user, {
+    // Add this relation
+    fields: [productReview.userId],
+    references: [user.id]
   })
 }));
 const status = pgEnum("status", ["new", "placed", "packaged", "sent"]);

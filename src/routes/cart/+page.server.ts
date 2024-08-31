@@ -34,7 +34,14 @@ export const actions: Actions = {
             console.log('Calculated total:', total);
 
             const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = body.map((item) => ({
-                price: item.productType.price.toString(), // Convert to string if it's a number
+                price_data: {
+                    currency: 'USD',
+                    product_data: {
+                        name: item.productName,
+                        description: `${item.productType.width}" x ${item.productType.height}"`
+                    },
+                    unit_amount: item.productType.price
+                },
                 quantity: item.quantity
             }));
 
@@ -70,7 +77,7 @@ export const actions: Actions = {
                         codes: JSON.stringify(
                             body.map((item) => ({
                                 quantity: item.quantity,
-                                code: item.productType.code
+                                code: item.productType.sku
                             }))
                         ),
                         userId: user?.id ?? ''
@@ -87,7 +94,7 @@ export const actions: Actions = {
             if (sessionResult.url) {
                 await track('StartedCheckout', { total });
                 console.log('Checkout session created, redirecting to:', sessionResult.url);
-                return { type: 'redirect', location: sessionResult.url };
+                return { success: true, url: sessionResult.url };
             }
 
             console.log('Failed to create checkout session');
@@ -100,16 +107,13 @@ export const actions: Actions = {
                     return { success: false, message: 'The checkout process timed out. Please try again.' };
                 }
                 
-                // Check for ECONNRESET error
                 if ('code' in err && err.code === 'ECONNRESET') {
                     return { success: false, message: 'The connection was reset. Please try again.' };
                 }
                 
-                // Log the error message for debugging
                 console.error('Error message:', err.message);
             }
             
-            // Generic error message for any other type of error
             return { success: false, message: 'An error occurred during checkout. Please try again.' };
         }
     }

@@ -23,8 +23,14 @@ const actions = {
       const total = body.reduce((sum, item) => sum + item.productType.price * item.quantity / 100, 0);
       console.log("Calculated total:", total);
       const line_items = body.map((item) => ({
-        price: item.productType.price.toString(),
-        // Convert to string if it's a number
+        price_data: {
+          currency: "USD",
+          product_data: {
+            name: item.productName,
+            description: `${item.productType.width}" x ${item.productType.height}"`
+          },
+          unit_amount: item.productType.price
+        },
         quantity: item.quantity
       }));
       if (total < 125) {
@@ -56,7 +62,7 @@ const actions = {
             codes: JSON.stringify(
               body.map((item) => ({
                 quantity: item.quantity,
-                code: item.productType.code
+                code: item.productType.sku
               }))
             ),
             userId: user?.id ?? ""
@@ -72,7 +78,7 @@ const actions = {
       if (sessionResult.url) {
         await track("StartedCheckout", { total });
         console.log("Checkout session created, redirecting to:", sessionResult.url);
-        return { type: "redirect", location: sessionResult.url };
+        return { success: true, url: sessionResult.url };
       }
       console.log("Failed to create checkout session");
       return { success: false, message: "Failed to create checkout session" };
